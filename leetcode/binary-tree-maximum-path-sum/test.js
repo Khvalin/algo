@@ -1,7 +1,8 @@
-var List = require('leetcode').List;
+var createTree = require('leetcode').Tree.create;
+var maxPathSum = require('./index').maxPathSum;
 
-// { val: 1, next: { val: 2, next: { val: 3, next: null } } }
-var l = List.create([1, 2, 3]);
+var l = createTree([ 1, 2, 3 ]);
+console.log(maxPathSum(l));
 
-// [1, 2, 3]
-console.log(l.toArray());
+l = createTree([ 1, 2, 3, null, null, 4, null, null, 5 ]);
+console.log(maxPathSum(l));
