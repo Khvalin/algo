@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Definition for a binary tree node.
  * function TreeNode(val) {
@@ -10,20 +12,32 @@
  * @return {number}
  */
 var maxPathSum = function(root) {
-  if (!root) {
-    return Number.NEGATIVE_INFINITY;
+  let result = Number.NEGATIVE_INFINITY
+
+  const visit = function(root) {
+    if (!root) {
+      return Number.NEGATIVE_INFINITY
+    }
+
+    if ('weigth' in root) {
+      return root.weigth
+    }
+
+    const leftSubtreeMaxSum = visit(root.left)
+    const rightSubtreeMaxSum = visit(root.right)
+
+    root.weigth = root.val + Math.max(0, leftSubtreeMaxSum, rightSubtreeMaxSum)
+
+    result = Math.max(result, root.weigth, leftSubtreeMaxSum + rightSubtreeMaxSum + root.val)
+
+    //    console.log('--', leftSubtreeMaxSum, rightSubtreeMaxSum)
+    //    console.log('-- --', root.val, root.weigth, result)
+    return root.weigth
   }
 
-  if ('weigth' in root) {
-    return root.weigth;
-  }
+  visit(root)
 
-  const leftSubtreeMaxSum = maxPathSum(root.left);
-  const rightSubtreeMaxSum = maxPathSum(root.right);
+  return result
+}
 
-  root.weigth = root.val + Math.max(0, leftSubtreeMaxSum, rightSubtreeMaxSum, leftSubtreeMaxSum + rightSubtreeMaxSum);
-
-  return root.weigth;
-};
-
-module.exports = { maxPathSum };
+module.exports = { maxPathSum }
