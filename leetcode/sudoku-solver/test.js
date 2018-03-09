@@ -1,6 +1,6 @@
 var solveSudoku = require('./index').solveSudoku
 
-var solved = solveSudoku([
+const input = [
   [ '.', '.', '9', '7', '4', '8', '.', '.', '.' ],
   [ '7', '.', '.', '.', '.', '.', '.', '.', '.' ],
   [ '.', '2', '.', '1', '.', '9', '.', '.', '.' ],
@@ -10,6 +10,7 @@ var solved = solveSudoku([
   [ '.', '.', '.', '8', '.', '3', '.', '2', '.' ],
   [ '.', '.', '.', '.', '.', '.', '.', '.', '6' ],
   [ '.', '.', '.', '2', '7', '5', '9', '.', '.' ]
-])
+]
+var solved = solveSudoku(input)
 
-console.log(solved)
+console.log(input)
