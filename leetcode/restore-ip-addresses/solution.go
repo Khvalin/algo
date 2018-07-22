@@ -1,34 +1,60 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 func restoreIpAddresses(s string) []string {
 	result := []string{}
-	dotsIndices := []int{1, 2, 3, len(s)}
+	octetLengths := []byte{1, 1, 1, 1}
 
-	splitByDots := func() []string {
-		ans := []string{}
-		prev := (0)
-		for _, index := range dotsIndices {
-			octet := ""
-			if prev < index && index <= len(s) {
-				octet =
-					s[prev:index]
+	for octetLengths[0] < 4 {
+		var total int
+		for _, val := range octetLengths {
+			total += int(val)
+		}
+		if total == len(s) {
+			//fmt.Println(octetLengths)
+
+			var prev byte
+			valid := true
+			octets := []string{}
+
+			for _, val := range octetLengths {
+				fragment := s[prev : prev+val]
+
+				octet, _ := strconv.Atoi(fragment)
+				valid = valid && octet < 256 && len(fragment) > 0 && (len(fragment) == 1 || fragment[0] != '0')
+				if !valid {
+					break
+				}
+				octets = append(octets, fragment)
+
+				prev += val
 			}
 
-			ans = append(ans, octet)
-			prev = index
+			if valid {
+				result = append(result, strings.Join(octets, "."))
+			}
 		}
 
-		return ans
+		cur := len(octetLengths) - 1
+		octetLengths[cur]++
+		for cur > 0 && octetLengths[cur] > 3 {
+			octetLengths[cur] = 1
+			cur--
+			octetLengths[cur]++
+		}
 	}
-
-	result = splitByDots()
 
 	return result
 }
 
 func main() {
 	fmt.Println(restoreIpAddresses("25525511135"))
-	fmt.Println(restoreIpAddresses("0"))
+	fmt.Println(restoreIpAddresses("192021"))
+	fmt.Println(restoreIpAddresses("0000"))
+	fmt.Println(restoreIpAddresses("010010"))
 }
