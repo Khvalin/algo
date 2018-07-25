@@ -17,7 +17,7 @@ func findMinStep(board string, hand string) int {
 	var reduce func(board string) string
 
 	reduce = func(board string) string {
-		fmt.Println(" reducing : ", board)
+		//	fmt.Println(" reducing : ", board)
 		count := 0
 		prev := rune(0)
 
@@ -30,7 +30,6 @@ func findMinStep(board string, hand string) int {
 			if count == THREE {
 				re := regexp.MustCompile(string(prev) + "{3,}")
 				return reduce(re.ReplaceAllString(board, ""))
-
 			}
 
 			prev = rune(board[i])
@@ -40,8 +39,7 @@ func findMinStep(board string, hand string) int {
 	}
 
 	solve = func(variant Zuma, step int) int {
-		fmt.Println(" ", step, " ", variant)
-
+		//	fmt.Println(" ", step, " ", variant)
 		result := math.MaxInt32
 
 		genVariants := func(variant Zuma) []Zuma {
@@ -68,7 +66,7 @@ func findMinStep(board string, hand string) int {
 
 				ocs, found := handMap[board[i]]
 				if found && count+ocs >= THREE {
-					insertCount := THREE - count
+					insertCount := 1 //THREE - count
 					newBoard := reduce(board[:i] + strings.Repeat(string(board[i]), insertCount) + board[i:])
 					newHand := strings.Replace(variant.hand, string(board[i]), "", insertCount)
 
@@ -82,7 +80,7 @@ func findMinStep(board string, hand string) int {
 		}
 
 		if len(variant.board) == 0 {
-			return step + 1
+			return step
 		}
 
 		variants := genVariants(variant)
@@ -110,8 +108,8 @@ func findMinStep(board string, hand string) int {
 }
 
 func main() {
-	//fmt.Println(findMinStep("WRRBBW", "WR"))
+	fmt.Println(findMinStep("WRRBBW", "WR"))
 	fmt.Println(findMinStep("WWRRBBWW", "WRBRW"))
-	//fmt.Println(findMinStep("G", "GGGGG"))
-	//fmt.Println(findMinStep("RBYYBBRRB", "YRBGB"))
+	fmt.Println(findMinStep("G", "GGGGG"))
+	fmt.Println(findMinStep("RBYYBBRRB", "YRBGB"))
 }
