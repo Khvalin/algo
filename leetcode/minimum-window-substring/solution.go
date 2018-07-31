@@ -44,12 +44,16 @@ func minWindow(s string, t string) string {
 			if sVector[ch] >= count {
 				for i := 0; i < len(matchIndices); i++ {
 					if s[matchIndices[i]] == ch {
-						matchIndices = matchIndices[i:]
+						matchIndices = append(matchIndices[:i], matchIndices[i+1:]...)
 						break
 					}
 				}
 			} else {
 				sVector[ch]++
+
+				if sVector[ch] == count {
+					foundCount++
+				}
 			}
 
 			//fmt.Println(sVector)
@@ -57,13 +61,14 @@ func minWindow(s string, t string) string {
 			matchIndices = append(matchIndices, i)
 
 			if sVector[ch] == count {
-				foundCount++
-				//fmt.Println(string(ch), foundCount)
 
-				if foundCount == len(tVector) {
+				//	fmt.Println(string(ch), foundCount)
+
+				if foundCount >= len(tVector) {
 					var start int
-					start, matchIndices = matchIndices[0], matchIndices[1:]
-					sVector[s[start]]--
+					start = matchIndices[0]
+					//start, matchIndices = matchIndices[0], matchIndices[1:]
+					//	sVector[s[start]]--
 					curLen := i - start + 1
 					if curLen < minLen {
 						result = s[start : i+1]
@@ -72,7 +77,7 @@ func minWindow(s string, t string) string {
 					}
 
 					//fmt.Println(minLen, sVector)
-					foundCount--
+					//foundCount--
 				}
 			}
 
@@ -83,9 +88,11 @@ func minWindow(s string, t string) string {
 }
 
 func main() {
+	fmt.Println(minWindow("bba", "ab"))
 	fmt.Println(minWindow("ADOBECODEBANC", "ABC"))
 	fmt.Println(minWindow("ABBA", "AA"))
 	fmt.Println(minWindow("ABDDCAABC", "ABC"))
+	fmt.Println(minWindow("ABADDCAABC", "AABC"))
 	fmt.Println(minWindow("CABBANC", "ABC"))
 	fmt.Println(minWindow("HELLOW", "Z"))
 }
