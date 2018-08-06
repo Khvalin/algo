@@ -5,12 +5,17 @@ import (
 	"fmt"
 )
 
+func stringifyAndPrint(obj interface{}) {
+	result, _ := json.Marshal(obj)
+	fmt.Println(string(result))
+	fmt.Println()
+}
+
 func judgePoint24(nums []int) bool {
 	type Operator byte
 	type Operand *float32
 	const (
-		Any Operator = iota
-		Plus
+		Plus Operator = iota
 		Multiply
 		Minus
 		Divide
@@ -20,38 +25,114 @@ func judgePoint24(nums []int) bool {
 		Left     *TreeNode
 		Right    *TreeNode
 		Operator *Operator
-		Operand  Operand
+		Value    Operand
 		ID       int
 	}
 
 	const targetSum = 24.0
+	const opCount = 3
 
-	nodes := (func() []TreeNode {
-		nodes := make([]TreeNode, 1)
+	var floatNums []float32
+
+	for i := 0; i < len(nums); i++ {
+		floatNums = append(floatNums, float32(nums[i]))
+	}
+
+	nextPermutation := func(array []int) bool {
+		// Find longest non-increasing suffix
+		i := len(array) - 1
+		for i > 0 && array[i-1] >= array[i] {
+			i--
+		}
+		// Now i is the head index of the suffix
+
+		// Are we at the last permutation already?
+		result := i > 0
+
+		if result {
+			// Let array[i - 1] be the pivot
+			// Find rightmost element that exceeds the pivot
+			j := len(array) - 1
+			for array[j] <= array[i-1] {
+				j--
+			}
+			// Now the value array[j] will become the new pivot
+			// Assertion: j >= i
+
+			// Swap the pivot with j
+			array[i-1], array[j] = array[j], array[i-1]
+
+			// Reverse the suffix
+			j = len(array) - 1
+			for i < j {
+				array[i], array[j] = array[j], array[i]
+				i++
+				j--
+			}
+		}
+
+		return result
+	}
+
+	operatorNodes, valueNodes := (func(floatNums []float32) ([]TreeNode, []TreeNode) {
+		operatorNodes := make([]TreeNode, 1)
+		valueNodes := []TreeNode{}
+		root := &(operatorNodes[0])
+
 		for i := 0; i < len(nums); i++ {
-			floatValue := float32(nums[i])
-			newNode := &TreeNode{Operand: &floatValue}
+			newNode := &TreeNode{Value: &floatNums[i]}
 
-			operandNode := &(nodes[0])
-
-			if operandNode.Left == nil {
-				operandNode.Left = newNode
+			if root.Left == nil {
+				root.Left = newNode
 			} else {
-				if operandNode.Right == nil {
-					operandNode.Right = newNode
+				if root.Right == nil {
+					root.Right = newNode
+				} else {
+					rightNode := &TreeNode{Right: root, Left: newNode}
+					operatorNodes = append(operatorNodes, *rightNode)
+					root = rightNode
 				}
 			}
 
-			nodes = append(nodes, *newNode)
+			valueNodes = append(valueNodes, *newNode)
 		}
-		return nodes
-	})()
+		return operatorNodes, valueNodes
+	})(floatNums)
 
-	json, _ := json.Marshal(nodes)
-	output := string(json)
-	fmt.Println(output)
+	stringifyAndPrint(len(valueNodes))
+	stringifyAndPrint(len(operatorNodes))
 
-	return false
+	numIndices, operators := []int{}, make([]Operator, len(operatorNodes)+1)
+
+	for i := 0; i < len(nums); i++ {
+		numIndices = append(numIndices, i)
+	}
+
+	for ok := true; ok; ok = nextPermutation(numIndices) {
+		for operators[0] == 0 {
+			for i := 0; i < len(operatorNodes); i++ {
+				operatorNodes[i].Operator = &operators[i+1]
+			}
+
+			for i := 1; i < len(numIndices); i++ {
+				valueNodes[i].Value = &floatNums[numIndices[i]]
+			}
+
+			stringifyAndPrint(operatorNodes[0])
+
+			i := len(operators) - 1
+			operators[i]++
+			for operators[i] > opCount && i > 0 {
+				operators[i] = 0
+				i--
+				operators[i]++
+			}
+		}
+
+		operators[0] = 0
+	}
+
+	return len(operatorNodes) > 0
 }
 
 func main() {
