@@ -11,23 +11,53 @@ func stringifyAndPrint(obj interface{}) {
 	fmt.Println()
 }
 
-func judgePoint24(nums []int) bool {
-	type Operator byte
-	type Operand *float32
-	const (
-		Plus Operator = iota
-		Multiply
-		Minus
-		Divide
-	)
+type operator byte
+type operand *float32
 
-	type TreeNode struct {
-		Left     *TreeNode
-		Right    *TreeNode
-		Operator *Operator
-		Value    Operand
-		ID       int
+const (
+	//Plus const
+	Plus operator = iota
+	//Multiply const
+	Multiply
+	//Minus const
+	Minus
+	//Divide const
+	Divide
+)
+
+type treeNode struct {
+	Left     *treeNode `json:",omitempty"`
+	Right    *treeNode `json:",omitempty"`
+	Operator operator
+	Value    operand `json:",omitempty"`
+	//	ID       int
+}
+
+func (node treeNode) calc() float32 {
+	var result float32
+	if node.Value == nil {
+		result = (node.Left).calc()
+		rightValue := (node.Right).calc()
+
+		switch node.Operator {
+		case Plus:
+			result += rightValue
+		case Minus:
+			result -= rightValue
+		case Multiply:
+			result *= rightValue
+		case Divide:
+			result /= rightValue
+		}
+
+	} else {
+		result = *(node.Value)
 	}
+
+	return result
+}
+
+func judgePoint24(nums []int) bool {
 
 	const targetSum = 24.0
 	const opCount = 3
@@ -74,13 +104,13 @@ func judgePoint24(nums []int) bool {
 		return result
 	}
 
-	operatorNodes, valueNodes := (func(floatNums []float32) ([]TreeNode, []TreeNode) {
-		operatorNodes := make([]TreeNode, 1)
-		valueNodes := []TreeNode{}
-		root := &(operatorNodes[0])
+	operatorNodes, valueNodes, root := (func(floatNums []float32) ([]*treeNode, []*treeNode, *treeNode) {
+		valueNodes := []*treeNode{}
+		root := &treeNode{}
+		operatorNodes := []*treeNode{}
 
 		for i := 0; i < len(nums); i++ {
-			newNode := &TreeNode{Value: &floatNums[i]}
+			newNode := &treeNode{Value: &floatNums[i]}
 
 			if root.Left == nil {
 				root.Left = newNode
@@ -88,37 +118,53 @@ func judgePoint24(nums []int) bool {
 				if root.Right == nil {
 					root.Right = newNode
 				} else {
-					rightNode := &TreeNode{Right: root, Left: newNode}
-					operatorNodes = append(operatorNodes, *rightNode)
+					rightNode := &treeNode{Right: root, Left: newNode}
+					operatorNodes = append(operatorNodes, rightNode)
 					root = rightNode
 				}
 			}
 
-			valueNodes = append(valueNodes, *newNode)
+			valueNodes = append(valueNodes, newNode)
 		}
-		return operatorNodes, valueNodes
+		operatorNodes = append(operatorNodes, root)
+		return operatorNodes, valueNodes, root
 	})(floatNums)
 
-	stringifyAndPrint(len(valueNodes))
-	stringifyAndPrint(len(operatorNodes))
+	// fmt.Printf("%p", root)
+	// fmt.Println(operatorNodes)
 
-	numIndices, operators := []int{}, make([]Operator, len(operatorNodes)+1)
+	//	stringifyAndPrint((valueNodes))
+	//	stringifyAndPrint((root))
+
+	numIndices, operators := []int{}, []operator{}
 
 	for i := 0; i < len(nums); i++ {
 		numIndices = append(numIndices, i)
+		operators = append(operators, 0)
 	}
 
 	for ok := true; ok; ok = nextPermutation(numIndices) {
 		for operators[0] == 0 {
+			cur := root
 			for i := 0; i < len(operatorNodes); i++ {
-				operatorNodes[i].Operator = &operators[i+1]
+				cur.Operator = (operators[i+1])
+				cur = cur.Right
 			}
+			//	stringifyAndPrint((root))
 
-			for i := 1; i < len(numIndices); i++ {
+			for i := 0; i < len(numIndices); i++ {
 				valueNodes[i].Value = &floatNums[numIndices[i]]
+				//	fmt.Printf("%f ", floatNums[numIndices[i]])
 			}
+			//fmt.Println()
 
-			stringifyAndPrint(operatorNodes[0])
+			res := root.calc()
+			if res == targetSum {
+				//		stringifyAndPrint((root))
+				return true
+			}
+			fmt.Println(res)
+			//stringifyAndPrint(root)
 
 			i := len(operators) - 1
 			operators[i]++
@@ -132,13 +178,10 @@ func judgePoint24(nums []int) bool {
 		operators[0] = 0
 	}
 
-	return len(operatorNodes) > 0
+	return false
 }
 
 func main() {
-	//fmt.Println(judgePoint24([]int{0, 3, 0, 72}))
 	fmt.Println(judgePoint24([]int{1, 3, 4, 6})) //6/(1-3/4)
-	//fmt.Println(judgePoint24([]int{8, 3, 1, 2}))
-	//fmt.Println(judgePoint24([]int{50, 2, 0, 1}))
-	//fmt.Println(judgePoint24([]int{-50, 2, 0, -1}))
+	fmt.Println(judgePoint24([]int{1, 9, 1, 2}))
 }
