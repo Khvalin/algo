@@ -18,28 +18,41 @@ const (
 	//Plus const
 	Plus operator = iota
 	//Multiply const
-	Multiply
+	Multiply = 1
 	//Minus const
-	Minus
+	Minus = 2
 	//Divide const
-	Divide
+	Divide = 3
 )
 
 type treeNode struct {
 	Left     *treeNode `json:",omitempty"`
 	Right    *treeNode `json:",omitempty"`
-	Operator operator
+	Operator *operator
 	Value    operand `json:",omitempty"`
-	//	ID       int
 }
 
-func (node treeNode) calc() float32 {
+func (node *treeNode) traverse(visit func(*treeNode)) {
+	if node != nil {
+		visit(node)
+
+		if (node).Right != nil {
+			node.Right.traverse(visit)
+		}
+
+		if (node).Left != nil {
+			node.Left.traverse(visit)
+		}
+	}
+}
+
+func (node *treeNode) calc() float32 {
 	var result float32
 	if node.Value == nil {
 		result = (node.Left).calc()
 		rightValue := (node.Right).calc()
 
-		switch node.Operator {
+		switch *(node.Operator) {
 		case Plus:
 			result += rightValue
 		case Minus:
@@ -104,10 +117,8 @@ func judgePoint24(nums []int) bool {
 		return result
 	}
 
-	operatorNodes, valueNodes, root := (func(floatNums []float32) ([]*treeNode, []*treeNode, *treeNode) {
-		valueNodes := []*treeNode{}
+	createLopsidedTree := (func(floatNums []float32) *treeNode {
 		root := &treeNode{}
-		operatorNodes := []*treeNode{}
 
 		for i := 0; i < len(nums); i++ {
 			newNode := &treeNode{Value: &floatNums[i]}
@@ -118,23 +129,33 @@ func judgePoint24(nums []int) bool {
 				if root.Right == nil {
 					root.Right = newNode
 				} else {
-					rightNode := &treeNode{Right: root, Left: newNode}
-					operatorNodes = append(operatorNodes, rightNode)
-					root = rightNode
+					root = &treeNode{Right: root, Left: newNode}
 				}
 			}
-
-			valueNodes = append(valueNodes, newNode)
 		}
-		operatorNodes = append(operatorNodes, root)
-		return operatorNodes, valueNodes, root
-	})(floatNums)
 
-	// fmt.Printf("%p", root)
-	// fmt.Println(operatorNodes)
+		return root
+	})
 
-	//	stringifyAndPrint((valueNodes))
-	//	stringifyAndPrint((root))
+	createBalancedTree := (func(floatNums []float32) *treeNode {
+		nodes := [](*treeNode){}
+
+		for i := 0; i < len(nums); i++ {
+			nodes = append(nodes, &treeNode{Value: &floatNums[i]})
+		}
+
+		for len(nodes) > 1 {
+			left, right := nodes[0], nodes[1]
+			nodes = nodes[2:]
+
+			parent := &treeNode{Left: left, Right: right}
+			nodes = append(nodes, parent)
+		}
+
+		return nodes[0]
+	})
+
+	roots := []*treeNode{createLopsidedTree(floatNums), createBalancedTree(floatNums)}
 
 	numIndices, operators := []int{}, []operator{}
 
@@ -144,27 +165,30 @@ func judgePoint24(nums []int) bool {
 	}
 
 	for ok := true; ok; ok = nextPermutation(numIndices) {
+		operators[0] = 0
 		for operators[0] == 0 {
-			cur := root
-			for i := 0; i < len(operatorNodes); i++ {
-				cur.Operator = (operators[i+1])
-				cur = cur.Right
-			}
-			//	stringifyAndPrint((root))
+			//	fmt.Println(operators)
+			for k := 0; k < len(roots); k++ {
+				root := roots[k]
 
-			for i := 0; i < len(numIndices); i++ {
-				valueNodes[i].Value = &floatNums[numIndices[i]]
-				//	fmt.Printf("%f ", floatNums[numIndices[i]])
-			}
-			//fmt.Println()
+				i, j := 0, 1
+				root.traverse(func(node *treeNode) {
+					if node.Right == nil && node.Left == nil {
+						node.Value = &floatNums[numIndices[i]]
+						i++
+					} else {
+						node.Operator = &(operators[j])
+						j++
+					}
+				})
 
-			res := root.calc()
-			if res == targetSum {
-				//		stringifyAndPrint((root))
-				return true
+				res := root.calc()
+				if res == targetSum {
+					//	stringifyAndPrint(root)
+					return true
+				}
+
 			}
-			fmt.Println(res)
-			//stringifyAndPrint(root)
 
 			i := len(operators) - 1
 			operators[i]++
@@ -174,8 +198,6 @@ func judgePoint24(nums []int) bool {
 				operators[i]++
 			}
 		}
-
-		operators[0] = 0
 	}
 
 	return false
