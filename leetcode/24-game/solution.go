@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 )
 
 func stringifyAndPrint(obj interface{}) {
@@ -72,7 +73,7 @@ func (node *treeNode) calc() float32 {
 
 func judgePoint24(nums []int) bool {
 
-	const targetSum = 24.0
+	const targetSum = float64(24)
 	const opCount = 3
 
 	var floatNums []float32
@@ -182,9 +183,8 @@ func judgePoint24(nums []int) bool {
 					}
 				})
 
-				res := root.calc()
-				if res == targetSum {
-					//	stringifyAndPrint(root)
+				res := float64(root.calc())
+				if math.Abs(targetSum-res) < 0.001 {
 					return true
 				}
 
@@ -206,4 +206,9 @@ func judgePoint24(nums []int) bool {
 func main() {
 	fmt.Println(judgePoint24([]int{1, 3, 4, 6})) //6/(1-3/4)
 	fmt.Println(judgePoint24([]int{1, 9, 1, 2}))
+	fmt.Println(judgePoint24([]int{4, 1, 8, 7}))
+	fmt.Println(judgePoint24([]int{1, 2, 1, 2}))
+
+	fmt.Println(judgePoint24([]int{3, 3, 8, 8})) // (8*3/3)/8
+
 }
