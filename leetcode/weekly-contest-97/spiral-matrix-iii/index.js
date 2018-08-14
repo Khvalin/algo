@@ -13,20 +13,33 @@ var spiralMatrixIII = function(R, C, r0, c0) {
 
   let count = 1
 
-  let rVec = 1
-  let cVec = 0
+  let rVec = 0
+  let cVec = 1
 
-  let width = 3
-  let cur = 0
+  let width = 1
 
   while (count < R * C) {
-    r += rVec
-    c + cVec
-    if (r < R && r >= 0 && c < C && c >= 0) {
-      result.push([ r, c ])
-      count++
-      cur++
+    for (j = 0; j < 2; j++) {
+      for (let i = 0; i < width; i++) {
+        r += rVec
+        c += cVec
+
+        //console.log([ r, c ])
+        if (r < R && r >= 0 && c < C && c >= 0) {
+          result.push([ r, c ])
+          count++
+        }
+      }
+
+      if (rVec == 0) {
+        rVec = cVec
+        cVec = 0
+      } else {
+        cVec = -rVec
+        rVec = 0
+      }
     }
+    width += 1
   }
 
   return result
