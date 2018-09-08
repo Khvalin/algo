@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -13,6 +14,7 @@ const fishChar = 'F'
 // Point is here
 type Point struct {
 	x, y int
+	fish bool
 }
 
 func toolAssistedSpeedrun(stage []string) int {
@@ -58,8 +60,8 @@ func toolAssistedSpeedrun(stage []string) int {
 		cur := q[0]
 		q = q[1:]
 
-		maxX, maxY := 1, 1
-		if fishChar == stage[cur.x][cur.y] {
+		maxX, maxY, fish := 1, 1, cur.fish || (fishChar == stage[cur.x][cur.y])
+		if fish {
 			maxX, maxY = 2, 3
 		}
 
@@ -68,17 +70,16 @@ func toolAssistedSpeedrun(stage []string) int {
 			for x := 1; x <= maxX; x++ {
 				dx := cur.x + x*k
 				if dx >= 0 && dx < len(stage) && wallChar != stage[dx][cur.y] {
-					vectors = append(vectors, Point{dx, cur.y})
+					vectors = append(vectors, Point{dx, cur.y, fish})
 				} else {
 					break
 				}
-
 			}
 
 			for y := 1; y <= maxY; y++ {
 				dy := cur.y + y*k
 				if dy >= 0 && dy < len(stage[0]) && wallChar != stage[cur.x][dy] {
-					vectors = append(vectors, Point{cur.x, dy})
+					vectors = append(vectors, Point{cur.x, dy, fish})
 				} else {
 					break
 				}
@@ -95,21 +96,31 @@ func toolAssistedSpeedrun(stage []string) int {
 		}
 	}
 
-	result, found := distance[end]
-	if !found {
-		result = -1
-	}
+	result := math.MaxInt32
 
-	// test output
-	for i := 0; i < len(stage); i++ {
-		for j := 0; j < len(stage[i]); j++ {
-			dist, _ := distance[Point{i, j}]
-			fmt.Printf("%3d", dist)
+	for i := 0; i < 2; i++ {
+		end.fish = i%2 == 1
+		d, found := distance[end]
+
+		if found && d < result {
+			result = d
 		}
-		fmt.Println()
 	}
-	// test output end
 
+	/*
+		// test output
+		for i := 0; i < len(stage); i++ {
+			for j := 0; j < len(stage[i]); j++ {
+				dist, _ := distance[Point{i, j, true}]
+				fmt.Printf("%3d", dist)
+			}
+			fmt.Println()
+		}
+		// test output end
+	*/
+	if result == math.MaxInt32 {
+		return -1
+	}
 	return result
 }
 
@@ -122,5 +133,18 @@ func main() {
 		"#####              #",
 		"#####  F           #",
 		"####################",
+	}))
+
+	fmt.Println(toolAssistedSpeedrun([]string{
+		"##########",
+		"##########",
+		"##########",
+		"###F######",
+		"### ######",
+		"S      E #",
+		"# ###### #",
+		"#        #",
+		"##########",
+		"##########",
 	}))
 }
