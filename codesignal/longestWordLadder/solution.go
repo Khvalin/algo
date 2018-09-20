@@ -46,8 +46,6 @@ func longestWordLadder(startWord string, goalWord string, usableWords []string) 
 			resIndices = append(resIndices, 0)
 		}
 
-		used[index] = true
-
 		i := last[index] + 1
 		for i < L && (!connected[i][index] || used[i]) {
 			i++
@@ -55,10 +53,12 @@ func longestWordLadder(startWord string, goalWord string, usableWords []string) 
 		last[index] = i
 
 		if i < L {
+			used[index] = true
 			stack = append(stack, i)
 		} else {
 			l := len(stack) - 1
 			for l > 0 && last[stack[l]] >= L {
+				last[stack[l]] = 1
 				used[stack[l]] = false
 				l--
 			}
