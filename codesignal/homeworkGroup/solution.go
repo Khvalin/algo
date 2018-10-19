@@ -7,6 +7,10 @@ const max = 1 << 31
 type A [][]int
 type visitFn func(int, int, int)
 
+type cell struct {
+	r, c int
+}
+
 func homeworkGroup(distances A) int {
 	L := len(distances)
 	rowMins := make([]int, L)
@@ -51,50 +55,36 @@ func homeworkGroup(distances A) int {
 		})
 	}
 
-	reduceCols := func(distances A) int {
-		rowsMap := map[int]bool{}
+	reduce := func(distances A, cols bool) []cell {
+		zeros := []cell{}
 
 		visitAll(distances, func(r, c, d int) {
-
-			if colMins[0] != 0 {
+			if cols {
 				distances[r][c] -= colMins[c]
+			} else {
+				distances[r][c] -= rowMins[r]
 			}
 			if distances[r][c] == 0 {
-				rowsMap[r] = true
+				zeros = append(zeros, cell{r: r, c: c})
 			}
 
 		})
-		return len(rowsMap)
-	}
-
-	reduceRows := func(distances A) int {
-		colsMap := map[int]bool{}
-
-		visitAll(distances, func(r, c, d int) {
-
-			if rowMins[0] != 0 {
-				distances[r][c] -= rowMins[c]
-			}
-			if distances[r][c] == 0 {
-				colsMap[c] = true
-			}
-
-		})
-		return len(colsMap)
+		return zeros
 	}
 
 	prepare(distances)
 
-	zeroRows, zeroCols := 0, 0
-	for round := 0; zeroRows < L && zeroCols < L; round++ {
+	zeroMap := make(map[cell]bool)
+	for round := 0; round < 2; round++ {
 		updateMins(distances)
-		if round%2 == 0 {
-			zeroRows = reduceCols(distances)
-		} else {
-			zeroCols = reduceRows(distances)
+		zeros := reduce(distances, round%2 == 0)
+
+		for _, z := range zeros {
+			zeroMap[z] = true
 		}
-		fmt.Println(colMins)
 	}
+	fmt.Println(zeroMap)
+	fmt.Println(distances)
 
 	res := 0
 
