@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 const max = 1 << 31
 
@@ -13,11 +11,18 @@ func homeworkGroup(distances A) int {
 	L := len(distances)
 	rowMins := make([]int, L)
 	colMins := make([]int, L)
+	orig := make([][]int, L)
+	for i := range distances {
+		orig[i] = make([]int, L)
+		copy(orig[i], distances[i])
+	}
 
 	visitAll := func(distances A, visit visitFn) {
 		for i := range distances { // rows
 			for j := range distances[i] { //cols
-				visit(i, j, distances[i][j])
+				if i != j {
+					visit(i, j, distances[i][j])
+				}
 			}
 		}
 	}
@@ -26,10 +31,10 @@ func homeworkGroup(distances A) int {
 		visitAll(distances, func(r, c, d int) {
 			rowMins[r] = max
 			colMins[r] = max
-
-			if d == -1 {
-				distances[r][c] = max
-			}
+			/*
+				if -1 == d {
+					distances[r][c] = max
+				}*/
 		})
 
 	}
@@ -88,9 +93,16 @@ func homeworkGroup(distances A) int {
 		} else {
 			zeroCols = reduceRows(distances)
 		}
-		fmt.Println(rowMins)
 		fmt.Println(colMins)
 	}
 
-	return 0
+	res := 0
+
+	visitAll(distances, func(r, c, d int) {
+		if d == 0 && orig[r][c] > res {
+			res = orig[r][c]
+		}
+	})
+
+	return res
 }

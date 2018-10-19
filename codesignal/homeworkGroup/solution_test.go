@@ -1,8 +1,11 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestSample1(t *testing.T) {
+	t.Skip()
 	input := [][]int{{-1, 2, 4, 3},
 		{2, -1, 3, 4},
 		{4, 3, -1, 3},
@@ -11,14 +14,35 @@ func TestSample1(t *testing.T) {
 	if res != 3 {
 		t.Error(
 			//	"For", input,
-			"expected", res,
+			"expected", 3,
+			"got", res,
+		)
+	} else {
+		t.Log("passed")
+	}
+}
+
+func TestSample5(t *testing.T) {
+	input := [][]int{
+		{-1, 9, 29, 25},
+		{9, -1, 8, 10},
+		{29, 8, -1, 26},
+		{25, 10, 26, -1}}
+
+	res := homeworkGroup(input)
+	if res != 25 {
+		t.Error(
+			//	"For", input,
+			"expected", 25,
 			"got", res,
 		)
 	}
 }
 
+/*
 func TestSample19(t *testing.T) {
-	input := [][]int{{-1, 106, 26, 26, 2, 13, 2, 53, 68, 2, 50, 17, 82, 13, 5, 18, 61, 26, 50, 2, 37, 25},
+	input := [][]int{
+		{-1, 106, 26, 26, 2, 13, 2, 53, 68, 2, 50, 17, 82, 13, 5, 18, 61, 26, 50, 2, 37, 25},
 		{106, -1, 64, 32, 100, 53, 136, 13, 58, 80, 104, 41, 36, 85, 109, 40, 17, 100, 68, 80, 65, 81},
 		{26, 64, -1, 32, 36, 5, 40, 45, 10, 16, 8, 25, 100, 53, 13, 8, 17, 4, 4, 16, 1, 1},
 		{26, 32, 32, -1, 20, 13, 40, 5, 58, 16, 72, 1, 20, 13, 37, 8, 25, 52, 52, 16, 41, 41},
@@ -45,8 +69,25 @@ func TestSample19(t *testing.T) {
 	if res != 17 {
 		t.Error(
 			//	"For", input,
-			"expected", res,
+			"expected", 17,
 			"got", res,
 		)
 	}
 }
+
+func TestSample4(t *testing.T) {
+	input := [][]int{{-1, 188, 349, 61, 48, 4},
+		{188, -1, 237, 50, 120, 155},
+		{349, 237, -1, 262, 402, 341},
+		{61, 50, 262, -1, 29, 40},
+		{48, 120, 402, 29, -1, 29},
+		{4, 155, 341, 40, 29, -1}}
+	res := homeworkGroup(input)
+	if res != 237 {
+		t.Error(
+			//	"For", input,
+			"expected", 237,
+			"got", res,
+		)
+	}
+}*/
