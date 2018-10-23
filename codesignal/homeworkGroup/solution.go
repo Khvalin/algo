@@ -1,9 +1,8 @@
 package main
 
-import (
-	"fmt"
-	"sort"
-)
+import "fmt"
+
+import "sort"
 
 const max = 1 << 31
 
@@ -12,6 +11,24 @@ type visitFn func(int, int, int)
 
 type cell struct {
 	r, c int
+}
+
+func (c cell) String() string {
+	return fmt.Sprintf("{r: %v, c: %v}", c.r, c.c)
+}
+
+type assigment struct {
+	count int
+	isCol bool
+	index int
+}
+
+func (a assigment) String() string {
+	dir := "row"
+	if a.isCol {
+		dir = "col"
+	}
+	return fmt.Sprintf("{ %v: %v, %v }", dir, a.index, a.count)
 }
 
 func homeworkGroup(distances A) int {
@@ -82,11 +99,6 @@ func homeworkGroup(distances A) int {
 	}
 
 	tryAssign := func(cells []cell) ([]int, []int, int, int) {
-		type assigment struct {
-			count int
-			isCol bool
-			index int
-		}
 
 		assignmentCols, assignmentRows := make([]assigment, L), make([]assigment, L)
 
@@ -112,17 +124,21 @@ func homeworkGroup(distances A) int {
 		sort.Slice(assignments, func(i, j int) bool {
 			return assignments[i].count > assignments[j].count
 		})
-		fmt.Println(assignments)
 
-		n := 0
-		for ; len(cells) > 0; n++ {
-			ass := assignments[n]
+		finalAssignments := []assigment{}
+		for i := 0; len(cells) > 0; i++ {
+			ass := assignments[i]
+			keep := false
 			for j := len(cells) - 1; j >= 0; j-- {
 				cell := cells[j]
 				if (ass.isCol && ass.index == cell.c) || (!ass.isCol && ass.index == cell.r) {
 					cells[j] = cells[len(cells)-1]
 					cells = cells[:len(cells)-1]
+					keep = true
 				}
+			}
+			if keep {
+				finalAssignments = append(finalAssignments, ass)
 			}
 		}
 
@@ -130,15 +146,13 @@ func homeworkGroup(distances A) int {
 
 		cCount, rCount := 0, 0
 
-		for i := 0; i <= n; i++ {
-			ass := assignments[i]
+		for _, ass := range finalAssignments {
 			if ass.isCol {
 				cols[ass.index]++
 				cCount++
 			} else {
 				rows[ass.index]++
 				rCount++
-
 			}
 		}
 
@@ -159,12 +173,12 @@ func homeworkGroup(distances A) int {
 
 	subtract := func(distances A, cols, rows []int, n int) {
 		visitAll(distances, func(r, c, d int) {
-			if cols[c] == 0 && rows[r] == 0 {
+			if rows[r] == 0 && cols[c] == 0 {
 				distances[r][c] -= n
 			}
 
 			if cols[c] > 0 && rows[r] > 0 {
-				distances[r][c]++
+				distances[r][c] += n
 			}
 		})
 
@@ -176,18 +190,19 @@ func homeworkGroup(distances A) int {
 	var cCount, rCount int
 
 	for round := 0; cCount+rCount < L; round++ {
-
 		if round < 2 {
 			updateMins(distances)
 			reduce(distances, round%2 == 0)
 		} else {
 			min := findMin(distances, assignmentCols, assignmentRows)
+			fmt.Println(min, assignmentCols, assignmentRows)
 			subtract(distances, assignmentCols, assignmentRows, min)
 		}
 
 		zeros := getZeros(distances)
 
 		assignmentCols, assignmentRows, cCount, rCount = tryAssign(zeros)
+		fmt.Println(cCount, rCount)
 	}
 
 	res := 0
