@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-import "sort"
-
 const max = 1 << 31
 
 type A [][]int
@@ -98,52 +96,43 @@ func homeworkGroup(distances A) int {
 		return zeros
 	}
 
-	tryAssign := func(cells []cell) ([]int, []int, int, int) {
+	tryAssign := func(zeros []cell) ([]bool, []bool, int, int) {
+		cols, rows, zeroRows := make([]bool, L), make([]bool, L), make([]bool, L)
+		zeroRowsMap := make([]int, L)
 
-		assignmentCols, assignmentRows := make([]assigment, L), make([]assigment, L)
+		starred := make([]bool, L)
+		colsCount := 0
+		for i, z := range zeros {
+			if !cols[z.c] && !zeroRows[z.r] {
+				starred[i] = true
+				cols[z.c] = true
+				zeroRows[z.c] = true
+				zeroRowsMap[z.c] = i
 
-		for _, cell := range cells {
-			assignmentCols[cell.c].index = cell.c
-			assignmentCols[cell.c].isCol = true
-			assignmentCols[cell.c].count++
-
-			assignmentRows[cell.r].index = cell.r
-			assignmentRows[cell.r].count++
-		}
-
-		assignments := []assigment{}
-		for i := 0; i < L; i++ {
-			if assignmentCols[i].count > 0 {
-				assignments = append(assignments, assignmentCols[i])
-			}
-			if assignmentRows[i].count > 0 {
-				assignments = append(assignments, assignmentRows[i])
+				colsCount++
 			}
 		}
 
-		sort.Slice(assignments, func(i, j int) bool {
-			return assignments[i].count > assignments[j].count
-		})
+		// Terminate the algorithm if all columns are covered.
+		if colsCount < L {
+			/*
+					Step 3:
+				Main Zero Search
 
-		finalAssignments := []assigment{}
-		for i := 0; len(cells) > 0; i++ {
-			ass := assignments[i]
-			keep := false
-			for j := len(cells) - 1; j >= 0; j-- {
-				cell := cells[j]
-				if (ass.isCol && ass.index == cell.c) || (!ass.isCol && ass.index == cell.r) {
-					cells[j] = cells[len(cells)-1]
-					cells = cells[:len(cells)-1]
-					keep = true
+				Find an uncovered Z in the distance matrix and prime it Z -> Z' . If no such zero exists, go to Step 5
+				If No Z* exists in the row of the Z', go to Step 4.
+				If a Z* exists, cover this row and uncover the column of the Z*. Return to Step 3.1 to find a new Z.
+			*/
+			for i, z := range zeros {
+				if !starred[i] {
+					if !zeroRows[z.r] {
+						break //TODO:??
+					}
+					rows[z.r] = true
+					cols[zeroRowsMap[z.r]] = false
 				}
 			}
-			if keep {
-				finalAssignments = append(finalAssignments, ass)
-			}
 		}
-
-		cols, rows := make([]int, L), make([]int, L)
-
 		cCount, rCount := 0, 0
 
 		for _, ass := range finalAssignments {
@@ -159,11 +148,11 @@ func homeworkGroup(distances A) int {
 		return cols, rows, cCount, rCount
 	}
 
-	findMin := func(distances A, cols, rows []int) int {
+	findMin := func(distances A, cols, rows []bool) int {
 		min := max
 
 		visitAll(distances, func(r, c, d int) {
-			if cols[c] == 0 && rows[r] == 0 && d < min {
+			if !cols[c] && !rows[r] && d < min {
 				min = d
 			}
 		})
@@ -171,13 +160,13 @@ func homeworkGroup(distances A) int {
 		return min
 	}
 
-	subtract := func(distances A, cols, rows []int, n int) {
+	subtract := func(distances A, cols, rows []bool, n int) {
 		visitAll(distances, func(r, c, d int) {
-			if rows[r] == 0 && cols[c] == 0 {
+			if !rows[r] && !cols[c] {
 				distances[r][c] -= n
 			}
 
-			if cols[c] > 0 && rows[r] > 0 {
+			if cols[c] && rows[r] {
 				distances[r][c] += n
 			}
 		})
@@ -186,7 +175,7 @@ func homeworkGroup(distances A) int {
 
 	prepare(distances)
 
-	var assignmentCols, assignmentRows []int
+	var assignmentCols, assignmentRows []bool
 	var cCount, rCount int
 
 	for round := 0; cCount+rCount < L; round++ {
