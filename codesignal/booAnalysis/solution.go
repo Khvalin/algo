@@ -1,30 +1,44 @@
 package booAnalysis
 
-func wailingGhosts(sounds string) bool {
-	o, u := 0, false
+func booAnalysis(sounds string) (r int) {
+	sounds += "u"
+	u := 0
+	leftStreak, rightStreak := 0, 0
+
+	save := func() {
+		if rightStreak > 0 {
+			if u > 0 {
+				min := leftStreak
+				if rightStreak < min {
+					min = rightStreak
+				}
+				r += 2*min + u
+			}
+			u = 0
+			leftStreak = 0
+			rightStreak = 0
+		}
+	}
+
 	for _, s := range sounds {
 		if s == 'o' {
-			if u {
-				o--
-				if 0 == o {
-					u = false
+			if u > 0 {
+				rightStreak++
+				if leftStreak == rightStreak {
+					save()
 				}
 			} else {
-				o++
+				leftStreak++
 			}
 		}
 
 		if s == 'u' {
-			if o < 1 {
-				return false
+			if leftStreak > 0 {
+				save()
+				u++
 			}
-			u = true
 		}
 	}
 
-	return !u && o == 0
-}
-
-func booAnalysis(sounds string) int {
-
+	return
 }
