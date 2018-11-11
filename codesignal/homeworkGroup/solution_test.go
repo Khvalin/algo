@@ -149,10 +149,29 @@ func TestSample15(t *testing.T) {
 	if res != 4 {
 		t.Error(
 			//	"For", input,
-			"expected", 4,
 			"got", res,
+			"expected", 4,
 		)
 	} else {
 		t.Log("15 PASSED")
+	}
+}
+
+func TestSample001(t *testing.T) {
+	input := [][]int{{
+		1, 2, 3},
+		{2, 4, 6},
+		{3, 6, 9},
+	}
+
+	res := homeworkGroup(input)
+	if res != 4 {
+		t.Error(
+			//	"For", input,
+			"got", res,
+			"expected", 4,
+		)
+	} else {
+		t.Log("001 PASSED")
 	}
 }
