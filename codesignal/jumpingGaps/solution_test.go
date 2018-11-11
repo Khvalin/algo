@@ -128,6 +128,27 @@ func TestSample6(t *testing.T) {
 	run(stage, 12, t)
 }
 
+func TestSample08(t *testing.T) {
+	stage := []string{
+		"      #   ",
+		"          ",
+		"   #    #E",
+		"   #    ##",
+		"    #     ",
+		"S   #     ",
+		"##  # #   ",
+		"    #     ",
+		"    #    #",
+		"  ###     ",
+		"          ",
+		"      #   ",
+		" # #      ",
+		"          ",
+		"          ",
+		"          "}
+	run(stage, 10, t)
+}
+
 func TestSample8(t *testing.T) {
 	stage := []string{
 		"                                                            ",

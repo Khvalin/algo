@@ -1,9 +1,8 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
+
+import "strings"
 
 type cell struct {
 	r, c   int
@@ -21,7 +20,7 @@ func (c cell) String() string {
 	d := c.dist
 	res := fmt.Sprintf("%v", d)
 	if d == max {
-		res = "Z"
+		res = "*"
 	}
 	if c.isWall {
 		res = "W"
@@ -92,7 +91,7 @@ func dfs(start, end cell, board Board) int {
 					}
 
 					d := s.dist + 1
-					if board[r][y].dist > d && r > 1 { // 0,1 === bogus rows for jumping over only
+					if board[r][y].dist > d && r > 0 { // 0 === top frame border
 						board[r][y].dist = d
 						q = append(q, board[r][y])
 					}
