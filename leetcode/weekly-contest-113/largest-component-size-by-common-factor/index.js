@@ -18,7 +18,17 @@ var largestComponentSize = function(A) {
         continue
       }
 
-      let nFactors = factors.filter((f) => f == n || f <= n / 2).filter((f) => n % f === 0)
+      let j = 0
+      let nFactors = []
+      while (factors[j] <= n / 2) {
+        const f = factors[j]
+        if (n % f === 0) {
+          nFactors.push(f)
+        }
+        j++
+      }
+      nFactors.push(n)
+      //let nFactors = factors.filter((f) => f == n || f <= n / 2).filter((f) => n % f === 0)
       let minIndex = nFactors[0]
 
       allFactors.set(i, nFactors)
@@ -27,16 +37,13 @@ var largestComponentSize = function(A) {
         if (!components[p]) {
           components[p] = { index: p, elements: new Set() }
         }
-        components[p].elements.add(i)
-      }
-
-      for (const p of nFactors) {
         if (p !== minIndex && components[p].index > minIndex) {
           components[p].index = minIndex
           components[p].elements.forEach((v) => components[minIndex].elements.add(v))
           components[p].elements = components[minIndex].elements
         }
       }
+      components[minIndex].elements.add(i)
     }
 
     for (const [ _, factors ] of allFactors) {

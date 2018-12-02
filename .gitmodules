@@ -1,0 +1,3 @@
+[submodule "hungarian-algorithm"]
+	path = hungarian-algorithm
+	url = https://github.com/oddg/hungarian-algorithm
