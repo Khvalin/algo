@@ -1,95 +1,97 @@
 package wordLadder
 
-import (
-	"fmt"
-)
-
-type Item struct {
-	used map[int]bool
-	path []int
-}
-
-func (item *Item) String() string {
-	return fmt.Sprintf("%b", item.path)
-}
-
-func copyItem(i *Item) *Item {
-	res := &Item{path: []int{}, used: map[int]bool{}}
-	if i != nil {
-		for key, value := range i.used {
-			res.used[key] = value
-		}
-		res.path = append(i.path, res.path...)
-	}
-	return res
-}
+import "sort"
 
 func ladderLength(beginWord string, endWord string, wordList []string) int {
-	canTransform := func(str1, str2 string) bool {
-		r := 0
-		for i := 0; i < len(str1); i++ {
-			if str1[i] != str2[i] {
-				r++
-			}
-		}
-
-		return r == 1
-	}
-
-	T := map[int][]int{}
-	for i, s := range wordList {
-		if canTransform(beginWord, s) {
-			T[-1] = append(T[-1], i)
+	endWordIndex := -1
+	for i, w := range wordList {
+		if w == endWord {
+			endWordIndex = i
 		}
 	}
 
-	for i := 0; i < len(wordList); i++ {
-		for j := i + 1; j < len(wordList); j++ {
-			if canTransform(wordList[i], wordList[j]) {
-				T[j] = append(T[j], i)
-				if wordList[i] != endWord {
-					T[i] = append(T[i], j)
+	if endWordIndex == -1 {
+		return 0
+	}
+
+	wordList[endWordIndex] = wordList[len(wordList)-1]
+	wordList = wordList[:len(wordList)-1]
+
+	beginWordIndex := -1
+	for i, w := range wordList {
+		if w == beginWord {
+			beginWordIndex = i
+			break
+		}
+	}
+
+	if beginWordIndex > -1 {
+		wordList[beginWordIndex] = wordList[len(wordList)-1]
+		wordList = wordList[:len(wordList)-1]
+	}
+
+	sort.Strings(wordList)
+	wordList = append([]string{endWord, beginWord}, wordList...)
+
+	L := len(wordList)
+
+	diff := func(a, b string) (c byte) {
+		for i := 0; i < len(a); i++ {
+			if a[i] != b[i] {
+				c++
+				if c > 1 {
+					return
 				}
 			}
+		}
+		return
+	}
+
+	connected, last := make([][]bool, L), make([]int, L)
+	for i := 0; i < L; i++ {
+		last[i] = 1
+		connected[i] = make([]bool, L)
+	}
+
+	for i := 0; i < L; i++ {
+		for j := i; j < L; j++ {
+			connected[i][j] = 1 == diff(wordList[i], wordList[j])
+			connected[j][i] = connected[i][j]
 		}
 	}
 
 	res := len(wordList) + 10
 
-	q := []Item{Item{path: []int{-1}, used: map[int]bool{}}}
-
-	for len(q) > 0 {
-		v := q[0]
-		q = q[1:]
-
-		tmp := ""
-		for _, n := range v.path {
-			if n > -1 {
-				tmp += wordList[n] + " "
-			}
+	stack, used := []int{1}, make(map[int]bool)
+	for len(stack) > 0 {
+		index := stack[len(stack)-1]
+		if connected[index][0] && res > len(stack) {
+			res = len(stack)
 		}
 
-		fmt.Println(tmp)
-
-		last := v.path[len(v.path)-1]
-		if last > -1 && wordList[last] == endWord {
-			res = len(v.used)
-			break
+		i := last[index] + 1
+		for i < L && (!connected[i][index] || used[i]) {
+			i++
 		}
+		last[index] = i
 
-		for _, n := range T[last] {
-			if !v.used[n] {
-				newItem := *copyItem(&v)
-				newItem.path = append([]int{n}, v.path...)
-				newItem.used[n] = true
-
-				q = append([]Item{newItem}, q...)
+		if i < L {
+			used[index] = true
+			stack = append(stack, i)
+		} else {
+			l := len(stack) - 1
+			for l > 0 && last[stack[l]] >= L {
+				last[stack[l]] = 1
+				used[stack[l]] = false
+				l--
 			}
+			stack = stack[:l]
 		}
 	}
 
 	if res > len(wordList) {
 		return 0
 	}
-	return res
+
+	return res + 1
 }
