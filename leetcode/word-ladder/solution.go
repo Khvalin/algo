@@ -1,6 +1,9 @@
 package wordLadder
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 func ladderLength(beginWord string, endWord string, wordList []string) int {
 	endWordIndex := -1
@@ -49,7 +52,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 	connected, last := make([][]bool, L), make([]int, L)
 	for i := 0; i < L; i++ {
-		last[i] = 1
+		last[i] = L
 		connected[i] = make([]bool, L)
 	}
 
@@ -57,35 +60,59 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		for j := i; j < L; j++ {
 			connected[i][j] = 1 == diff(wordList[i], wordList[j])
 			connected[j][i] = connected[i][j]
+			if last[i] > j {
+				last[i] = j
+			}
 		}
 	}
+	if connected[0][1] {
+		return 2
+	}
+	fmt.Println(connected[0])
 
 	res := len(wordList) + 10
+	origLast := make([]int, L)
+	copy(origLast, last)
 
 	stack, used := []int{1}, make(map[int]bool)
 	for len(stack) > 0 {
-		index := stack[len(stack)-1]
-		if connected[index][0] && res > len(stack) {
-			res = len(stack)
+		start := stack[len(stack)-1]
+
+		//	next := L + 1
+
+		next := last[start] + 1
+		for next < L && (!connected[start][next] || used[next]) {
+			next++
 		}
 
-		i := last[index] + 1
-		for i < L && (!connected[i][index] || used[i]) {
-			i++
+		ans := ""
+		for _, v := range stack {
+			ans += wordList[v] + " "
 		}
-		last[index] = i
+		fmt.Println(ans)
 
-		if i < L {
-			used[index] = true
-			stack = append(stack, i)
-		} else {
+		last[start] = next
+
+		if next >= L || len(stack) > res {
+			//rewind
 			l := len(stack) - 1
-			for l > 0 && last[stack[l]] >= L {
-				last[stack[l]] = 1
+			for l > 0 && last[stack[l]] >= L { // TODO : l >= 0
+				last[stack[l]] = origLast[stack[l]]
 				used[stack[l]] = false
 				l--
 			}
 			stack = stack[:l]
+			// stack = stack[:l+1]
+		} else {
+			chainFound := connected[next][0]
+			if chainFound {
+				if res > len(stack) {
+					res = len(stack)
+				}
+			} else {
+				used[next] = true
+				stack = append(stack, next)
+			}
 		}
 	}
 
@@ -93,5 +120,5 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		return 0
 	}
 
-	return res + 1
+	return res + 2
 }
