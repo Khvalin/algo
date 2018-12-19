@@ -1,9 +1,6 @@
 package wordLadder
 
-import (
-	"fmt"
-	"sort"
-)
+import "sort"
 
 func ladderLength(beginWord string, endWord string, wordList []string) int {
 	endWordIndex := -1
@@ -68,7 +65,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 	if connected[0][1] {
 		return 2
 	}
-	fmt.Println(connected[0])
+	//	fmt.Println(connected[0])
 
 	res := len(wordList) + 10
 	origLast := make([]int, L)
@@ -84,24 +81,24 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		for next < L && (!connected[start][next] || used[next]) {
 			next++
 		}
-
-		ans := ""
-		for _, v := range stack {
-			ans += wordList[v] + " "
-		}
-		fmt.Println(ans)
+		/*
+			ans := ""
+			for _, v := range stack {
+				ans += wordList[v] + " "
+			}
+			fmt.Println(ans) */
 
 		last[start] = next
 
 		if next >= L || len(stack) > res {
 			//rewind
 			l := len(stack) - 1
-			for l > 0 && last[stack[l]] >= L { // TODO : l >= 0
-				last[stack[l]] = origLast[stack[l]]
+			for l >= 0 && last[stack[l]] >= L { // TODO : l >= 0
+				//	last[stack[l]] = origLast[stack[l]]
 				used[stack[l]] = false
 				l--
 			}
-			stack = stack[:l]
+			stack = stack[:l+1]
 			// stack = stack[:l+1]
 		} else {
 			chainFound := connected[next][0]
