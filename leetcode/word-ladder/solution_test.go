@@ -5,7 +5,7 @@ import (
 )
 
 func TestSampleCustom1(t *testing.T) {
-	t.Skip()
+	//	t.Skip()
 	beginWord := "hit"
 	endWord := "cog"
 	wordList := []string{"hot", "dot", "dog", "lot", "log", "cog"}
@@ -18,7 +18,7 @@ func TestSampleCustom1(t *testing.T) {
 }
 
 func TestSampleCustom2(t *testing.T) {
-	t.Skip()
+	//	t.Skip()
 	beginWord := "hit"
 	endWord := "cog"
 	wordList := []string{"hot", "dot", "dog", "lot", "log"}
@@ -99,9 +99,10 @@ func TestSampleCustom28(t *testing.T) {
 	res := ladderLength(beginWord, endWord, wordList)
 
 	if 4 == res {
-		t.Log("Test 20 passed")
+		//c
+		t.Log("Test 28 passed")
 	} else {
-		t.Error("fail, got ", res, " expected ", 4)
+		t.Error("fail, got ", res, " expected ", 4, " cat can fan")
 	}
 }
 
@@ -112,7 +113,7 @@ func TestSampleCustom21(t *testing.T) {
 	res := ladderLength(beginWord, endWord, wordList)
 
 	if 0 == res {
-		t.Log("Test 20 passed")
+		t.Log("Test 21 passed")
 	} else {
 		t.Error("fail, got ", res, " expected ", 0)
 	}

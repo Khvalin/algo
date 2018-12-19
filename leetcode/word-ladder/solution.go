@@ -1,6 +1,8 @@
 package wordLadder
 
-import "sort"
+import (
+	"fmt"
+)
 
 func ladderLength(beginWord string, endWord string, wordList []string) int {
 	endWordIndex := -1
@@ -30,7 +32,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		wordList = wordList[:len(wordList)-1]
 	}
 
-	sort.Strings(wordList)
+	//sort.Strings(wordList)
 	wordList = append([]string{endWord, beginWord}, wordList...)
 
 	L := len(wordList)
@@ -49,16 +51,22 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 	connected, last := make([][]bool, L), make([]int, L)
 	for i := 0; i < L; i++ {
-		last[i] = L
+		last[i] = L + 1
 		connected[i] = make([]bool, L)
 	}
 
 	for i := 0; i < L; i++ {
-		for j := i; j < L; j++ {
+		for j := i + 1; j < L; j++ {
 			connected[i][j] = 1 == diff(wordList[i], wordList[j])
 			connected[j][i] = connected[i][j]
-			if last[i] > j {
-				last[i] = j
+			if connected[i][j] {
+				if last[i] >j - 1 {
+					last[i] = j - 1
+				}
+
+				if last[j] > i - 1 {
+					last[j] = i - 1
+				}
 			}
 		}
 	}
@@ -81,12 +89,6 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		for next < L && (!connected[start][next] || used[next]) {
 			next++
 		}
-		/*
-			ans := ""
-			for _, v := range stack {
-				ans += wordList[v] + " "
-			}
-			fmt.Println(ans) */
 
 		last[start] = next
 
@@ -94,22 +96,32 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 			//rewind
 			l := len(stack) - 1
 			for l >= 0 && last[stack[l]] >= L { // TODO : l >= 0
-				//	last[stack[l]] = origLast[stack[l]]
+				last[stack[l]] = origLast[stack[l]]
 				used[stack[l]] = false
 				l--
 			}
 			stack = stack[:l+1]
-			// stack = stack[:l+1]
+			if l >= 0 {
+			//	last[stack[l]]++
+			}
 		} else {
 			chainFound := connected[next][0]
 			if chainFound {
 				if res > len(stack) {
-					res = len(stack)
+					res = len(stack) 
 				}
+				last[start] = L
 			} else {
-				used[next] = true
 				stack = append(stack, next)
 			}
+			used[next] = true
+
+			ans := ""
+			for _, v := range stack {
+				ans += wordList[v] + " "
+			}
+
+			fmt.Println(ans)
 		}
 	}
 
