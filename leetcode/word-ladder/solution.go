@@ -1,7 +1,7 @@
 package wordLadder
 
 import (
-	"fmt"
+//	"fmt"
 )
 
 func ladderLength(beginWord string, endWord string, wordList []string) int {
@@ -49,85 +49,52 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		return
 	}
 
-	connected, last := make([][]bool, L), make([]int, L)
+	connected, pathLen := make([][]int, L), make([]int, L)
 	for i := 0; i < L; i++ {
-		last[i] = L + 1
-		connected[i] = make([]bool, L)
+		pathLen[i] = L + 1
+		connected[i] = []int{}
 	}
 
 	for i := 0; i < L; i++ {
 		for j := i + 1; j < L; j++ {
-			connected[i][j] = 1 == diff(wordList[i], wordList[j])
-			connected[j][i] = connected[i][j]
-			if connected[i][j] {
-				if last[i] >j - 1 {
-					last[i] = j - 1
-				}
-
-				if last[j] > i - 1 {
-					last[j] = i - 1
-				}
+			if (1 == diff(wordList[i], wordList[j])) {
+				connected[j] = append(connected[j], i)
+				connected[i] = append(connected[i], j)
 			}
 		}
 	}
-	if connected[0][1] {
-		return 2
-	}
+
 	//	fmt.Println(connected[0])
 
-	res := len(wordList) + 10
-	origLast := make([]int, L)
-	copy(origLast, last)
+	pathLen[1]= 1
 
-	stack, used := []int{1}, make(map[int]bool)
-	for len(stack) > 0 {
-		start := stack[len(stack)-1]
+	q := []int{1}
+	neighbours := make([]int, L)
+	for len(q) > 0 {
+		start := q[0]
+		q = q[1:]
 
 		//	next := L + 1
 
-		next := last[start] + 1
-		for next < L && (!connected[start][next] || used[next]) {
-			next++
+		j := 0
+		for _, v := range connected[start] {
+			if (pathLen[v] > pathLen[start]+1) {
+				pathLen[v] = pathLen[start]+1
+				neighbours[j] = v
+				j++
+			}
 		}
+		q = append(q, neighbours[:j]...)
 
-		last[start] = next
-
-		if next >= L || len(stack) > res {
-			//rewind
-			l := len(stack) - 1
-			for l >= 0 && last[stack[l]] >= L { // TODO : l >= 0
-				last[stack[l]] = origLast[stack[l]]
-				used[stack[l]] = false
-				l--
-			}
-			stack = stack[:l+1]
-			if l >= 0 {
-			//	last[stack[l]]++
-			}
-		} else {
-			chainFound := connected[next][0]
-			if chainFound {
-				if res > len(stack) {
-					res = len(stack) 
-				}
-				last[start] = L
-			} else {
-				stack = append(stack, next)
-			}
-			used[next] = true
-
-			ans := ""
-			for _, v := range stack {
-				ans += wordList[v] + " "
-			}
-
-			fmt.Println(ans)
-		}
 	}
+	
+
+	res := pathLen[0]
+	//fmt.Println(pathLen)
 
 	if res > len(wordList) {
 		return 0
 	}
 
-	return res + 2
+	return res 
 }
