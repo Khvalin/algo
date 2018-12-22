@@ -4,8 +4,9 @@ import (
 //"fmt"
 )
 
-func ladderLength(beginWord string, endWord string, wordList []string) (int, [][]int) {
+func ladderLength(beginWord string, endWord string, wordList []string) (int, [][]int, []string) {
 	endWordIndex := -1
+
 	for i, w := range wordList {
 		if w == endWord {
 			endWordIndex = i
@@ -13,7 +14,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) (int, [][
 	}
 
 	if endWordIndex == -1 {
-		return 0, nil
+		return 0, nil, wordList
 	}
 
 	wordList[endWordIndex] = wordList[len(wordList)-1]
@@ -88,21 +89,24 @@ func ladderLength(beginWord string, endWord string, wordList []string) (int, [][
 	//fmt.Printf("")
 
 	if res > len(wordList) {
-		return 0, nil
+		return 0, nil, wordList
 	}
 
-	return res, connected
+	return res, connected, wordList
 }
 
 func findLadders(beginWord string, endWord string, wordList []string) [][]string {
+	minLen, connected, wordList := ladderLength(beginWord, endWord, wordList)
+	//fmt.Println(wordList)
 	L, res := len(wordList), [][]string{}
 
-	minLen, connected := ladderLength(beginWord, endWord, wordList)
 	visited := make([]bool, L)
 	last := make([]int, L)
 	for i := range last {
-		last[i] = 1
+		last[i] = -1
 	}
+	last[0] = L + 1
+	visited[1] = true
 
 	stack := []int{1}
 	for len(stack) > 0 {
@@ -110,17 +114,39 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 
 		i := last[start] + 1
 		v := connected[start]
-		for i < len(v) && !visited[v[i]] {
+
+		for i < len(v) && v[i] < len(visited) && visited[v[i]] {
 			i++
 		}
+		last[start] = i
 
-		if i < len(v) {
-			if len(stack) == minLen {
-				//
+		if i < len(v) && len(stack) <= minLen {
+			next := v[i]
+
+			//	fmt.Println(next)
+			visited[next] = true
+			stack = append(stack, next)
+
+			if len(stack) == minLen && next == 0 {
+				path := []string{}
+				for _, k := range stack {
+					path = append(path, wordList[k])
+				}
+				res = append(res, path)
 			}
+
 		} else {
 			// rewind
+			l := len(stack) - 1
+			for l >= 0 && last[stack[l]] > len(connected[stack[l]])-1 {
+				visited[stack[l]] = false
+				last[stack[l]] = -1
+				l--
+			}
+			stack = stack[:l+1]
 		}
 	}
+	//	fmt.Println(res)
+
 	return res
 }
