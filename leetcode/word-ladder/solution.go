@@ -57,7 +57,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 	for i := 0; i < L; i++ {
 		for j := i + 1; j < L; j++ {
-			if (1 == diff(wordList[i], wordList[j])) {
+			if 1 == diff(wordList[i], wordList[j]) {
 				connected[j] = append(connected[j], i)
 				connected[i] = append(connected[i], j)
 			}
@@ -66,7 +66,7 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 	//	fmt.Println(connected[0])
 
-	pathLen[1]= 1
+	pathLen[1] = 1
 
 	q := []int{1}
 	neighbours := make([]int, L)
@@ -78,8 +78,8 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 
 		j := 0
 		for _, v := range connected[start] {
-			if (pathLen[v] > pathLen[start]+1) {
-				pathLen[v] = pathLen[start]+1
+			if pathLen[v] > pathLen[start]+1 {
+				pathLen[v] = pathLen[start] + 1
 				neighbours[j] = v
 				j++
 			}
@@ -87,7 +87,6 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		q = append(q, neighbours[:j]...)
 
 	}
-	
 
 	res := pathLen[0]
 	//fmt.Println(pathLen)
@@ -96,5 +95,5 @@ func ladderLength(beginWord string, endWord string, wordList []string) int {
 		return 0
 	}
 
-	return res 
+	return res
 }

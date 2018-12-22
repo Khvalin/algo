@@ -1,7 +1,7 @@
 package wordLadder
 
 import (
-	"fmt"
+//"fmt"
 )
 
 func ladderLength(beginWord string, endWord string, wordList []string) (int, [][]int) {
@@ -100,11 +100,27 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 	minLen, connected := ladderLength(beginWord, endWord, wordList)
 	visited := make([]bool, L)
 	last := make([]int, L)
+	for i := range last {
+		last[i] = 1
+	}
 
-	q := []int{1}
-	for len(q) > 0 {
-		start := q[0]
-		q = q[1:]
+	stack := []int{1}
+	for len(stack) > 0 {
+		start := stack[len(stack)-1]
+
+		i := last[start] + 1
+		v := connected[start]
+		for i < len(v) && !visited[v[i]] {
+			i++
+		}
+
+		if i < len(v) {
+			if len(stack) == minLen {
+				//
+			}
+		} else {
+			// rewind
+		}
 	}
 	return res
 }
