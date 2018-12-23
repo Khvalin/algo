@@ -1,41 +1,11 @@
 package wordLadder
 
 import (
-//"fmt"
+//	"fmt"
+
 )
 
-func ladderLength(beginWord string, endWord string, wordList []string) (int, [][]int, []string) {
-	endWordIndex := -1
-
-	for i, w := range wordList {
-		if w == endWord {
-			endWordIndex = i
-		}
-	}
-
-	if endWordIndex == -1 {
-		return 0, nil, wordList
-	}
-
-	wordList[endWordIndex] = wordList[len(wordList)-1]
-	wordList = wordList[:len(wordList)-1]
-
-	beginWordIndex := -1
-	for i, w := range wordList {
-		if w == beginWord {
-			beginWordIndex = i
-			break
-		}
-	}
-
-	if beginWordIndex > -1 {
-		wordList[beginWordIndex] = wordList[len(wordList)-1]
-		wordList = wordList[:len(wordList)-1]
-	}
-
-	//sort.Strings(wordList)
-	wordList = append([]string{endWord, beginWord}, wordList...)
-
+func ladderLength(wordList []string) (int, [][]int, []int) {
 	L := len(wordList)
 
 	diff := func(a, b string) (c byte) {
@@ -86,19 +56,63 @@ func ladderLength(beginWord string, endWord string, wordList []string) (int, [][
 	}
 
 	res := pathLen[0]
-	//fmt.Printf("")
 
 	if res > len(wordList) {
-		return 0, nil, wordList
+		return 0, nil, nil
 	}
 
-	return res, connected, wordList
+	return res, connected, pathLen
 }
 
 func findLadders(beginWord string, endWord string, wordList []string) [][]string {
-	minLen, connected, wordList := ladderLength(beginWord, endWord, wordList)
-	//fmt.Println(wordList)
-	L, res := len(wordList), [][]string{}
+	updateWordList := func(beginWord string, endWord string, wordList []string) ([]string, bool) {
+		endWordIndex := -1
+
+		for i, w := range wordList {
+			if w == endWord {
+				endWordIndex = i
+			}
+		}
+
+		if endWordIndex == -1 {
+			return wordList, false
+		}
+
+		wordList[endWordIndex] = wordList[len(wordList)-1]
+		wordList = wordList[:len(wordList)-1]
+
+		beginWordIndex := -1
+		for i, w := range wordList {
+			if w == beginWord {
+				beginWordIndex = i
+				break
+			}
+		}
+
+		if beginWordIndex > -1 {
+			wordList[beginWordIndex] = wordList[len(wordList)-1]
+			wordList = wordList[:len(wordList)-1]
+		}
+
+		return append([]string{endWord, beginWord}, wordList...), true
+	}
+
+	res := [][]string{}
+
+	hasSolution := false
+	wordList, hasSolution = updateWordList(beginWord, endWord, wordList)
+	if !hasSolution {
+		return res
+	}
+
+	minLen, connected, pathLen := ladderLength(wordList)
+//	fmt.Println(minLen)
+
+	if minLen == 0 {
+		return res
+	}
+
+	L := len(wordList)
 
 	visited := make([]bool, L)
 	last := make([]int, L)
@@ -115,7 +129,7 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 		i := last[start] + 1
 		v := connected[start]
 
-		for i < len(v) && v[i] < len(visited) && visited[v[i]] {
+		for i < len(v) &&( visited[v[i]] || (pathLen[v[i]] != pathLen[start]+1) ){
 			i++
 		}
 		last[start] = i
@@ -123,9 +137,10 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 		if i < len(v) && len(stack) <= minLen {
 			next := v[i]
 
-			//	fmt.Println(next)
 			visited[next] = true
 			stack = append(stack, next)
+
+	//		fmt.Println(strings.Join(path[:], ","))
 
 			if len(stack) == minLen && next == 0 {
 				path := []string{}
@@ -138,10 +153,12 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 		} else {
 			// rewind
 			l := len(stack) - 1
-			for l >= 0 && last[stack[l]] > len(connected[stack[l]])-1 {
-				visited[stack[l]] = false
-				last[stack[l]] = -1
-				l--
+			for l >= 0 && last[stack[l]] >= len(connected[stack[l]])-1 {
+				if l > 0 {
+					visited[stack[l]] = false
+					last[stack[l]] = -1
+				}    
+l--
 			}
 			stack = stack[:l+1]
 		}
