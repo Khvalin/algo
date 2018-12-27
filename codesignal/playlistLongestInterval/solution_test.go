@@ -39,33 +39,7 @@ func Test_playlistLongestInterval(t *testing.T) {
 
 		{
 			name: "sample test 7",
-			args: args{[]string{
-				"HEOIG (1:52)",
-				"F (9:24)",
-				"IXDK (0:42)",
-				"F (9:24)",
-				"D (2:11)",
-				"HEOIG (1:52)",
-				"IXDK (0:42)",
-				"GEAA (2:19)",
-				"D (2:11)",
-				"IDNQ (9:10)",
-				"VNWBLVNUEZ (0:13)",
-				"UHHZILNA (9:47)",
-				"UZVZ (5:42)",
-				"IXDK (0:42)",
-				"VNWBLVNUEZ (0:13)",
-				"LY (2:48)",
-				"UZVZ (5:42)",
-				"IDNQ (9:10)",
-				"G (3:02)",
-				"G (3:02)",
-				"IYW (4:26)",
-				"UHHZILNA (9:47)",
-				"E (4:05)",
-				"QNYZXPC (0:59)",
-				"UZVZ (5:42)",
-			}},
+			args: args{},
 			want: 1916,
 		},
 	}
@@ -75,5 +49,43 @@ func Test_playlistLongestInterval(t *testing.T) {
 				t.Errorf("playlistLongestInterval() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestSample7(t *testing.T) {
+	expected := 1916
+	input := []string{
+		"HEOIG (1:52)",
+		"F (9:24)",
+		"IXDK (0:42)",
+		"F (9:24)",
+		"D (2:11)",
+		"HEOIG (1:52)",
+		"IXDK (0:42)",
+		"GEAA (2:19)",
+		"D (2:11)",
+		"IDNQ (9:10)",
+		"VNWBLVNUEZ (0:13)",
+		"UHHZILNA (9:47)",
+		"UZVZ (5:42)",
+		"IXDK (0:42)",
+		"VNWBLVNUEZ (0:13)",
+		"LY (2:48)",
+		"UZVZ (5:42)",
+		"IDNQ (9:10)",
+		"G (3:02)",
+		"G (3:02)",
+		"IYW (4:26)",
+		"UHHZILNA (9:47)",
+		"E (4:05)",
+		"QNYZXPC (0:59)",
+		"UZVZ (5:42)",
+	}
+	result := playlistLongestInterval(input)
+
+	if result == expected {
+		t.Log("passed", result)
+	} else {
+		t.Error("failed! got ", result, " instead of ", 1916)
 	}
 }

@@ -1,43 +1,49 @@
 package playlistlongestinterval
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 )
 
 func playlistLongestInterval(songs []string) (res int) {
+	type entry struct {
+		name     string
+		duration int
+	}
+
 	total := 0
-	songs = append(songs, "PLAYLISTEND (00:00)")
-	songDuration := map[string]int{}
+
+	plPos := map[string]int{}
+	stack := []entry{}
+	head := 0
+
 	re := regexp.MustCompile(`^(\w+)\s\((\d?\d):(\d\d)\)$`)
+
 	for _, s := range songs {
 		matches := re.FindStringSubmatch(s)
-		name := matches[1]
-		h, _ := strconv.Atoi(matches[2])
-		m, _ := strconv.Atoi(matches[3])
+		name := s //matches[1]
+		m, _ := strconv.Atoi(matches[2])
+		ss, _ := strconv.Atoi(matches[3])
 
-		_, found := songDuration[name]
+		duration := m*60 + ss
 
-		fmt.Println(name, total)
+		pos, found := plPos[name]
+		if found {
+			for k := head; k <= pos; k++ {
+				total -= stack[k].duration
+				delete(plPos, stack[k].name)
+			}
+			head = pos + 1
+		}
+		total += duration
+
+		plPos[name] = len(stack)
+		stack = append(stack, entry{name, duration})
 
 		if res < total {
 			res = total
 		}
-
-		d := h*60 + m
-
-		total += d
-
-		if found {
-			fmt.Println("  clear")
-			total -= songDuration[name]
-			songDuration = map[string]int{}
-		}
-		songDuration[name] = total
 	}
-
-	fmt.Println(songDuration)
 
 	return res
 }
