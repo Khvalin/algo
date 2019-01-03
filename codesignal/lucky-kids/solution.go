@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// Kid is kid
+// Kid is a kid
 type Kid struct {
 	age, behavior, naughtyEldersCount int
 }
@@ -14,7 +14,7 @@ func (k Kid) String() string {
 	return fmt.Sprintf("{ AGE: %v, BEH: %v, count: %v }", k.age, k.behavior, k.naughtyEldersCount)
 }
 
-//TreeNode is tree node
+//TreeNode is a tree node
 type TreeNode struct {
 	value *Kid
 	left  *TreeNode //left
@@ -35,25 +35,30 @@ func (n TreeNode) String() string {
 
 //Insert is insert
 func (n *TreeNode) Insert(value *Kid) error {
-	//If the data value is less than the current node’s value, and if the left child node is nil, insert a new left child node. Else call Insert on the left subtree.
 
-	if (value.behavior >= n.value.behavior) || (value.age < n.value.age) {
-		if n.left == nil {
-			n.left = &TreeNode{value: value}
-			return nil
+	//If the data value is greater than the current node's value,
+	// do the same but for the right subtree.
+	if value.behavior <= n.value.behavior {
+		// "ages"  are distinct
+		if value.behavior < n.value.behavior && value.age > n.value.age {
+			n.value.naughtyEldersCount++
 		}
 
-		return n.left.Insert(value)
+		if n.right == nil {
+			n.right = &TreeNode{value: value}
+			return nil
+		}
+		return n.right.Insert(value)
 	}
 
-	//If the data value is greater than the current node’s value, do the same but for the right subtree.
-
-	n.value.naughtyEldersCount++
-	if n.right == nil {
-		n.right = &TreeNode{value: value}
+	//If the data value is less than the current node's value, and if the left child node is nil, insert a new left child node.
+	// Else call Insert on the left subtree.
+	if n.left == nil {
+		n.left = &TreeNode{value: value}
 		return nil
 	}
-	return n.right.Insert(value)
+
+	return n.left.Insert(value)
 }
 
 func luckyKids(behaviors []int) int {
@@ -72,9 +77,15 @@ func luckyKids(behaviors []int) int {
 		return kids[i].behavior < kids[j].behavior
 	})
 
-	root := TreeNode{value: &(kids[L-1])}
-	for i := L - 2; i >= 0; i-- {
-		root.Insert(&(kids[i]))
+	pivot := L - 1
+	for pivot > L>>1 && kids[pivot].behavior == kids[pivot-1].behavior {
+		pivot--
+	}
+	root := TreeNode{value: &(kids[pivot])}
+	for i := L - 1; i >= 0; i-- {
+		if i != pivot {
+			root.Insert(&(kids[i]))
+		}
 	}
 
 	fmt.Println(root)
