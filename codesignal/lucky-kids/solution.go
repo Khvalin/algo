@@ -1,16 +1,15 @@
 package luckykids
 
 import "fmt"
-
 import "sort"
 
 // Kid is a kid
 type Kid struct {
-	age, behavior, naughtyEldersCount int
+	age, behavior int
 }
 
 func (k Kid) String() string {
-	return fmt.Sprintf("{ AGE: %v, BEH: %v, count: %v }\n", k.age, k.behavior, k.naughtyEldersCount)
+	return fmt.Sprintf("{ AGE: %v, BEH: %v }\n", k.age, k.behavior)
 }
 
 func luckyKids(behaviors []int) int {
@@ -28,6 +27,7 @@ func luckyKids(behaviors []int) int {
 		return kids[i].behavior > kids[j].behavior
 	})
 
+	naughtyEldersCount := make([]int, L)
 	indices := make([]int, L)
 	next := make([]int, L)
 	streak, b := 0, 0
@@ -51,6 +51,7 @@ func luckyKids(behaviors []int) int {
 		b = kid.behavior
 	}
 
+	top, bottom := 0, L-1
 	res := 0
 	eldersCountFix := 0
 	for _, n := range indices {
@@ -58,27 +59,33 @@ func luckyKids(behaviors []int) int {
 		start := next[kid.age]
 
 		minCount := (L - kid.age) >> 1
-		naughtyEldersCount := eldersCountFix + kid.naughtyEldersCount + L - start
+		count := eldersCountFix + naughtyEldersCount[n] + L - start
 
-		if naughtyEldersCount >= minCount {
+		if count >= minCount {
 			res++
-			//		fmt.Println(naughtyEldersCount, minCount, kid)
 		}
 
-		if n < L>>1 {
-			for i := 0; i < n; i++ {
-				kids[i].naughtyEldersCount--
+		if n <= L>>1 {
+			for i := top; i < n; i++ {
+				naughtyEldersCount[i]--
+			}
+			if n == top {
+				top++
 			}
 		} else {
 			eldersCountFix--
-			for i := n + 1; i < L; i++ {
-				kids[i].naughtyEldersCount++
+			//	next := bottom + 1
+			for i := n + 1; i <= bottom; i++ {
+				//next = i
+				naughtyEldersCount[i]++
 			}
+
+			if n == bottom {
+				bottom--
+			}
+
 		}
 	}
-	/*
-		fmt.Println(kids)
-		fmt.Println(next)
-	*/
+
 	return res
 }
