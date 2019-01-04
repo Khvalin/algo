@@ -1,9 +1,8 @@
 package luckykids
 
-import (
-	"fmt"
-	"sort"
-)
+import "fmt"
+
+import "sort"
 
 // Kid is a kid
 type Kid struct {
@@ -11,54 +10,7 @@ type Kid struct {
 }
 
 func (k Kid) String() string {
-	return fmt.Sprintf("{ AGE: %v, BEH: %v, count: %v }", k.age, k.behavior, k.naughtyEldersCount)
-}
-
-//TreeNode is a tree node
-type TreeNode struct {
-	value *Kid
-	left  *TreeNode //left
-	right *TreeNode //right
-}
-
-func (n TreeNode) String() string {
-	left, right := "", ""
-	if n.left != nil {
-		left = fmt.Sprintf("LEFT: %v", n.left)
-	}
-	if n.right != nil {
-		right = fmt.Sprintf("RIGHT: %v", n.right)
-	}
-
-	return fmt.Sprintf("{ VAL: %v %v %v }", n.value, right, left)
-}
-
-//Insert is insert
-func (n *TreeNode) Insert(value *Kid) error {
-
-	//If the data value is greater than the current node's value,
-	// do the same but for the right subtree.
-	if value.behavior <= n.value.behavior {
-		// "ages"  are distinct
-		if value.behavior < n.value.behavior && value.age > n.value.age {
-			n.value.naughtyEldersCount++
-		}
-
-		if n.right == nil {
-			n.right = &TreeNode{value: value}
-			return nil
-		}
-		return n.right.Insert(value)
-	}
-
-	//If the data value is less than the current node's value, and if the left child node is nil, insert a new left child node.
-	// Else call Insert on the left subtree.
-	if n.left == nil {
-		n.left = &TreeNode{value: value}
-		return nil
-	}
-
-	return n.left.Insert(value)
+	return fmt.Sprintf("{ AGE: %v, BEH: %v, count: %v }\n", k.age, k.behavior, k.naughtyEldersCount)
 }
 
 func luckyKids(behaviors []int) int {
@@ -71,33 +23,62 @@ func luckyKids(behaviors []int) int {
 
 	sort.Slice(kids, func(i, j int) bool {
 		if kids[i].behavior == kids[j].behavior {
-			return kids[i].age > kids[j].age
+			return kids[i].age < kids[j].age
 		}
-
-		return kids[i].behavior < kids[j].behavior
+		return kids[i].behavior > kids[j].behavior
 	})
 
-	pivot := L - 1
-	for pivot > L>>1 && kids[pivot].behavior == kids[pivot-1].behavior {
-		pivot--
-	}
-	root := TreeNode{value: &(kids[pivot])}
-	for i := L - 1; i >= 0; i-- {
-		if i != pivot {
-			root.Insert(&(kids[i]))
+	indices := make([]int, L)
+	next := make([]int, L)
+	streak, b := 0, 0
+	for i := 0; i <= L; i++ {
+		if i < L && (i == 0 || b == kids[i].behavior) {
+			streak++
+		} else {
+			for j := i - streak; j < i; j++ {
+				next[kids[j].age] = i
+			}
+			streak = 1
 		}
-	}
 
-	fmt.Println(root)
+		if i == L {
+			break
+		}
+		kid := kids[i]
+		next[kid.age] = L
+
+		indices[kid.age] = i
+		b = kid.behavior
+	}
 
 	res := 0
-	for _, kid := range kids {
+	eldersCountFix := 0
+	for _, n := range indices {
+		kid := kids[n]
+		start := next[kid.age]
+
 		minCount := (L - kid.age) >> 1
-		//	fmt.Println(L, kid.naughtyEldersCount, kid.age, minCount)
-		if kid.naughtyEldersCount >= minCount {
+		naughtyEldersCount := eldersCountFix + kid.naughtyEldersCount + L - start
+
+		if naughtyEldersCount >= minCount {
 			res++
+			//		fmt.Println(naughtyEldersCount, minCount, kid)
+		}
+
+		if n < L>>1 {
+			for i := 0; i < n; i++ {
+				kids[i].naughtyEldersCount--
+			}
+		} else {
+			eldersCountFix--
+			for i := n + 1; i < L; i++ {
+				kids[i].naughtyEldersCount++
+			}
 		}
 	}
-
+	/*
+		fmt.Println(kids)
+		fmt.Println(next)
+	*/
 	return res
 }
