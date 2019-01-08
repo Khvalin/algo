@@ -3,7 +3,11 @@
 const createTree = (nodeValues) => {
   const nodes = {}
   for (let i = 1; i <= nodeValues.length; i++) {
-    const node = { val: nodeValues[i - 1], left: null, right: null }
+    const val = nodeValues[i - 1]
+    if (val === null){
+       continue
+    }
+    const node = { val, left: null, right: null }
     if (i > 1) {
       let parent = i >> 1
 
