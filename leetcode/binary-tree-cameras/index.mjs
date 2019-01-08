@@ -1,3 +1,4 @@
+import { createTree } from '../leetcode-tools.mjs'
 
 /**
  * Definition for a binary tree node.
@@ -17,29 +18,31 @@ var minCameraCover = function(root) {
       return
     }
 
-    node.val = parent? parent.val + 1:0
+    node.val = parent ? parent.val + 1 : 0
 
-    let {left, right} = node
-    
+    let { left, right } = node
+
     left && dfs(left, node)
     right && dfs(right, node)
 
-    if (!left && !right && !node.hasCam && (!parent || !parent.hasCam)) {
-      (parent || node).hasCam = true
-    } else {
-      node.hasCam = node.hasCam || (left || right) && !(left && left.hasCam || right && right.hasCam)
+    if (!node.hasCam && (!parent || !parent.hasCam)) {
+      if (!left && !right) {
+        ;(parent || node).hasCam = true
+      } else {
+        node.hasCam = node.hasCam || !((left && left.hasCam) || (right && right.hasCam))
+      }
     }
 
-    res += node.hasCam? 1: 0
+    res += node.hasCam ? 1 : 0
   }
 
   dfs(root)
-  //console.log(root)
+  console.log(JSON.stringify(root))
 
   return res
 }
 
 //console.log(minCameraCover(createTree([ 0, 0, null, 0, 0 ])))
 //console.log(minCameraCover(createTree([ 0 ])))
-console.log(minCameraCover(createTree([0,0,0,null,null,null,0])))
-console.log(minCameraCover(createTree([0,0,null,null,0,0,null,null,0,0])))
+console.log(minCameraCover(createTree([ 0, 0, 0, null, null, null, 0 ])))
+console.log(minCameraCover(createTree([ 0, 0, null, null, 0, 0, null, null, 0, 0 ])))
