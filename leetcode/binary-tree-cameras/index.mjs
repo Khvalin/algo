@@ -1,3 +1,5 @@
+import util from 'util'
+
 import { createTree } from '../leetcode-tools.mjs'
 
 /**
@@ -13,6 +15,19 @@ import { createTree } from '../leetcode-tools.mjs'
  */
 var minCameraCover = function(root) {
   let res = 0
+
+  const setCam = (node, parent) => {
+    if (!node.hasCam) {
+      res++
+      node.covered = true
+      let { left, right } = node
+
+      parent && (parent.covered = true)
+      right && (right.covered = true)
+      left && (left.covered = true)
+    }
+  }
+
   const dfs = (node, parent) => {
     if (!node) {
       return
@@ -25,24 +40,20 @@ var minCameraCover = function(root) {
     left && dfs(left, node)
     right && dfs(right, node)
 
-    if (!node.hasCam && (!parent || !parent.hasCam)) {
-      if (!left && !right) {
-        ;(parent || node).hasCam = true
-      } else {
-        node.hasCam = node.hasCam || !((left && left.hasCam) || (right && right.hasCam))
+    if (!node.covered) {
+      if ((!left || !left.covered) && (!right || !right.covered)) {
+        setCam(parent || node, parent)
       }
     }
-
-    res += node.hasCam ? 1 : 0
   }
 
   dfs(root)
-  console.log(JSON.stringify(root))
 
   return res
 }
 
 //console.log(minCameraCover(createTree([ 0, 0, null, 0, 0 ])))
 //console.log(minCameraCover(createTree([ 0 ])))
-console.log(minCameraCover(createTree([ 0, 0, 0, null, null, null, 0 ])))
-console.log(minCameraCover(createTree([ 0, 0, null, null, 0, 0, null, null, 0, 0 ])))
+//console.log(minCameraCover(createTree([ 0, 0, 0, null, null, null, 0 ])))
+console.log(2, minCameraCover(createTree([ 0, 0, null, null, 0, 0, null, null, 0, 0 ])))
+console.log(3, minCameraCover(createTree([ 0, null, 0, 0, 0, null, null, null, 0, 0, null, 0, null, null, 0 ])))
