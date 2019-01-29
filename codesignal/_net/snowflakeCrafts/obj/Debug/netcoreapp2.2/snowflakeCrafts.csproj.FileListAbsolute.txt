@@ -1,0 +1,11 @@
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/bin/Debug/netcoreapp2.2/snowflakeCrafts.deps.json
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/bin/Debug/netcoreapp2.2/snowflakeCrafts.runtimeconfig.json
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/bin/Debug/netcoreapp2.2/snowflakeCrafts.runtimeconfig.dev.json
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/bin/Debug/netcoreapp2.2/snowflakeCrafts.dll
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/bin/Debug/netcoreapp2.2/snowflakeCrafts.pdb
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.csprojAssemblyReference.cache
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.csproj.CoreCompileInputs.cache
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.AssemblyInfoInputs.cache
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.AssemblyInfo.cs
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.dll
+/home/const/code/algo/codesignal/_net/snowflakeCrafts/obj/Debug/netcoreapp2.2/snowflakeCrafts.pdb

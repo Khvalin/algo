@@ -19,6 +19,7 @@ var distributeCoins = function(root) {
     dfs(node.left)
     dfs(node.right)
     if (node.val == 0) {
+      node.val = -1
     }
   }
 }
