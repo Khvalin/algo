@@ -81,15 +81,15 @@ func solve(N int, a []int) (string, [][]int) {
 	return YES, res
 }
 
-func toInt(buf []byte) int {
-	n := 0
-	for _, v := range buf {
-		n = n*10 + int(v-'0')
-	}
-	return n
-}
-
 func main() {
+	toInt := func(buf []byte) int {
+		n := 0
+		for _, v := range buf {
+			n = n*10 + int(v-'0')
+		}
+		return n
+	}
+
 	n := 0
 
 	fmt.Scan(&n)
