@@ -42,8 +42,13 @@ func fillShortestPaths(plan [][]string) [][]string {
 		}
 	}
 
-	q := make([][2]int, n*m*2)
+	visited := map[[2]int]bool{}
+
+	q := make([][2]int, (n+1)*(m+1))
+	//	fmt.Println(len(q))
 	q[0] = start
+	visited[start] = true
+
 	j := 1
 	i := 0
 	for i < j {
@@ -54,10 +59,13 @@ func fillShortestPaths(plan [][]string) [][]string {
 
 		for x := minX; x <= maxX; x++ {
 			for y := minY; y <= maxY; y++ {
-				if planWeight[x][y] == planWeight[c[0]][c[1]]-1 {
+				cur := [2]int{x, y}
+				if !visited[cur] && planWeight[x][y] == planWeight[c[0]][c[1]]-1 {
+					visited[cur] = true
+
 					res[x][y] = "#"
-					//	fmt.Println(j)
-					q[j] = [2]int{x, y}
+					q[j][0], q[j][1] = cur[0], cur[1]
+					//fmt.Println(j, x, y, planWeight[x][y], planWeight[c[0]][c[1]])
 					j++
 				}
 			}
@@ -70,30 +78,44 @@ func fillShortestPaths(plan [][]string) [][]string {
 }
 
 func main() {
-	input := [][]string{
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", "s", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " ", " "}}
+	/* 	input := [][]string{
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{"s", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "},
+	   		{" ", " ", " ", " ", " ", " "}}
 
-	//	fmt.Println(fillShortestPaths(input))
+	   	fmt.Println(fillShortestPaths(input))
+	*/
+	input2 := make([][]string, 99)
+	for i := range input2 {
+		input2[i] = make([]string, 99)
 
-	input = [][]string{
-		{" ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " "},
-		{" ", " ", "s", " ", " "},
-		{" ", " ", " ", " ", " "},
-		{" ", " ", " ", " ", " "},
+		for k := 0; k < 99; k++ {
+			input2[i][k] = " "
+		}
 	}
-	fmt.Println(fillShortestPaths(input))
 
-	input = [][]string{
-		{" ", "s", " "},
-		{" ", " ", " "}}
+	input2[45][45] = "s"
 
-	fmt.Println(fillShortestPaths(input))
+	fmt.Println(fillShortestPaths(input2))
+
+	/*
+		input = [][]string{
+			{" ", " ", " ", " ", " "},
+			{" ", " ", " ", " ", " "},
+			{" ", " ", "s", " ", " "},
+			{" ", " ", " ", " ", " "},
+			{" ", " ", " ", " ", " "},
+		}
+		fmt.Println(fillShortestPaths(input))
+
+		input = [][]string{
+			{" ", "s", " "},
+			{" ", " ", " "}}
+
+		fmt.Println(fillShortestPaths(input)) */
 }
