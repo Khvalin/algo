@@ -16,23 +16,22 @@ func solve(a []int) []Range {
 	L := len(a)
 
 	sums := make([]map[int]int, L)
-	//	all := map[int]bool{}
+	all := map[int]int{}
 
 	for i := L - 1; i >= 0; i-- {
+		if sums[i] == nil {
+			sums[i] = map[int]int{}
+		}
+
 		cur := 0
 
 		for j := i; j < L; j++ {
 			cur += a[j]
 
-			//			all[cur] = true
-
 			_, found := sums[i][cur]
 			if !found {
-				if sums[i] == nil {
-					sums[i] = map[int]int{}
-				}
-
 				sums[i][cur] = j
+				all[cur]++
 			}
 		}
 	}
@@ -48,8 +47,6 @@ func solve(a []int) []Range {
 			return out
 		}
 
-		out = []int{}
-
 		if start < L {
 			if next, found := sums[start][sum]; found {
 				max := []int{start}
@@ -64,8 +61,9 @@ func solve(a []int) []Range {
 					}
 				}
 
-				out = make([]int, len(max))
-				copy(out, max)
+				out = max
+				//out = make([]int, len(max))
+				//copy(out, max)
 			}
 		}
 
@@ -79,12 +77,14 @@ func solve(a []int) []Range {
 	var starts []int
 	for i := L - 1; i >= 0; i-- {
 		for s := range sums[i] {
-			c := calc(i, s)
-			if len(c) > max {
-				target = s
-				max = len(c)
+			if all[s] > max {
+				c := calc(i, s)
+				if len(c) > max {
+					target = s
+					max = len(c)
 
-				starts = c
+					starts = c
+				}
 			}
 		}
 	}
