@@ -16,7 +16,7 @@ func solve(a []int) []Range {
 	L := len(a)
 
 	sums := make([]map[int]int, L)
-	all := map[int]int{}
+	all := map[int][]int{}
 
 	for i := L - 1; i >= 0; i-- {
 		if sums[i] == nil {
@@ -31,7 +31,7 @@ func solve(a []int) []Range {
 			_, found := sums[i][cur]
 			if !found {
 				sums[i][cur] = j
-				all[cur]++
+				all[cur] = append([]int{i}, all[cur]...)
 			}
 		}
 	}
@@ -50,9 +50,8 @@ func solve(a []int) []Range {
 		if start < L {
 			if next, found := sums[start][sum]; found {
 				max := []int{start}
-				for i := 1 + next; i < L; i++ {
-
-					if _, found = sums[i][sum]; found {
+				for _, i := range all[sum] {
+					if _, found = sums[i][sum]; i > next && found {
 						p := calc(i, sum)
 
 						if len(p) >= len(max) {
@@ -62,8 +61,6 @@ func solve(a []int) []Range {
 				}
 
 				out = max
-				//out = make([]int, len(max))
-				//copy(out, max)
 			}
 		}
 
@@ -77,7 +74,7 @@ func solve(a []int) []Range {
 	var starts []int
 	for i := L - 1; i >= 0; i-- {
 		for s := range sums[i] {
-			if all[s] > max {
+			if len(all[s]) > max {
 				c := calc(i, s)
 				if len(c) > max {
 					target = s
@@ -88,6 +85,7 @@ func solve(a []int) []Range {
 			}
 		}
 	}
+	//fmt.Println(target)
 
 	res := make([]Range, max)
 
