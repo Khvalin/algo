@@ -6,16 +6,27 @@ import (
 	"os"
 )
 
-func solve(n, b, a int64, s []bool) int {
+func solve(n int, b, a int64, s []bool) int {
 	var (
 		i int
-		f bool
 	)
 
-	//	bCur, aCur := b, a
-	for i, f = range s {
-		if f {
+	bCur, aCur := b, a
+	for ; i < n; i++ {
+		if aCur <= 0 && bCur <= 0 {
+			break
+		}
 
+		f := s[i]
+		if f && bCur > 0 && aCur < a {
+			aCur++
+			bCur--
+		} else {
+			if aCur > 0 {
+				aCur--
+			} else {
+				bCur--
+			}
 		}
 	}
 
@@ -24,8 +35,9 @@ func solve(n, b, a int64, s []bool) int {
 
 func main() {
 	var (
-		n, b, a int64
-		s       []bool
+		n    int
+		b, a int64
+		s    []bool
 	)
 
 	fmt.Scan(&n, &b, &a)
