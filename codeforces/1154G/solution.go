@@ -11,15 +11,15 @@ func solve(a []uint32) (int, int) {
 
 	min := uint64(1<<64 - 1)
 
-	m := map[uint32]int{}
-	for i, n := range a {
-		m[n] = 1 + i
-	}
-
 	var (
 		ans1 int
 		ans2 int
 	)
+
+	m := map[uint32]int{}
+	for i, n := range a {
+		m[n] = 1 + i
+	}
 
 	for gcd := uint32(1); gcd < N; gcd++ {
 		index1, index2 := -1, -1
