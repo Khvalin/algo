@@ -47,6 +47,8 @@ func solve(a []int) []Range {
 			return out
 		}
 
+		//	fmt.Println(hash)
+
 		if start < L {
 			if next, found := sums[start][sum]; found {
 				max := []int{start}
@@ -85,7 +87,7 @@ func solve(a []int) []Range {
 			}
 		}
 	}
-	//fmt.Println(target)
+	fmt.Println(target)
 
 	res := make([]Range, max)
 
