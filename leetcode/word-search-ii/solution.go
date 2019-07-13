@@ -52,6 +52,18 @@ func exist(board [][]byte, word string) bool {
 	return false
 }
 
+func findWords(board [][]byte, words []string) []string {
+	var res []string
+
+	for _, w := range words {
+		if exist(board, w) {
+			res = append(res, w)
+		}
+	}
+
+	return res
+}
+
 func main() {
 	BOARD := [][]byte{
 		[]byte{'A', 'B', 'C', 'E'},
@@ -60,5 +72,5 @@ func main() {
 		[]byte{'A', 'D', 'E', 'E'},
 	}
 
-	fmt.Println(exist(BOARD, "ABBACADEEEECCESE"))
+	fmt.Println(findWords(BOARD, []string{"ABBA", "EEEEE"}))
 }
