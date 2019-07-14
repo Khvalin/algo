@@ -1,3 +1,9 @@
+/*
+Answer: How to add negabinary numbers? https://math.stackexchange.com/a/3251611?stw=2
+
+You add them just like regular binary numbers, except the carry is negative and should be subtracted from each column instead of added to it.
+*/
+
 /**
  * @param {number[]} arr1
  * @param {number[]} arr2
@@ -30,7 +36,7 @@ var addNegabinary = function(arr1, arr2) {
     res.unshift(nextBit)
   }
 
-  while (res.length > 0 && !res[0]) {
+  while (res.length > 1 && !res[0]) {
     res.shift()
   }
 
