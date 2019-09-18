@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 const empty = '!'
@@ -9,7 +10,7 @@ const empty = '!'
 func solve(n uint32, s1, s2 []rune) (bool, string) {
 	const ABC = "abc"
 
-	m := uint32(n)
+	m := uint32(2)
 	if n < m {
 		m = n
 	}
@@ -82,7 +83,7 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 	}
 
 	res := string(r)
-	/* if n > m {
+	 if n > m {
 		res = strings.Repeat(res, int(n>>1))
 
 		if n%2 > 0 {
@@ -114,7 +115,7 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 					i++
 				} else {
 					i--
-					if r[i] > empty {
+					if i >=0 && r[i] > empty {
 						count[r[i]]++
 						if i < len(r)-1 {
 							r[i+1] = empty
@@ -125,7 +126,7 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 
 			res += string(r)
 		}
-	} */
+	} 
 
 	return true, res
 }
