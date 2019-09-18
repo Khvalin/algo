@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+const empty = '!'
+
 func solve(n uint32, s1, s2 []rune) string {
 	const ABC = "abc"
 
@@ -15,12 +17,22 @@ func solve(n uint32, s1, s2 []rune) string {
 		'c': n,
 	}
 
-	getOptions := func(min rune) []rune {
+	r := make([]rune, l)
+	bl := map[rune]map[rune]bool{}
+
+	for _, ch := range [...]rune{'a', 'b', 'c', empty} {
+		bl[ch] = map[rune]bool{}
+	}
+
+	bl[s1[0]][s1[1]] = true
+	bl[s2[0]][s2[1]] = true
+
+	getOptions := func(min, prev rune) []rune {
 		//TODO: add order
 		r := make([]rune, 0, 3)
 
 		for _, ch := range ABC {
-			if ch >= min && count[ch] > 0 {
+			if ch >= min && count[ch] > 0 && !bl[prev][ch] {
 				r = append(r, ch)
 			}
 		}
@@ -28,45 +40,38 @@ func solve(n uint32, s1, s2 []rune) string {
 		return r
 	}
 
-	r := make([]rune, l)
-	bl := map[rune]map[rune]bool{}
+	for i := int64(0); i >= 0 && i < l; {
+		prev, s := empty, empty
 
-	for _, ch := range [...]rune{'a', 'b', 'c', ' '} {
-		bl[ch] = map[rune]bool{}
-	}
-
-	bl[s1[0]][s1[1]] = true
-	bl[s2[0]][s2[1]] = true
-
-	prev := ' '
-	for i := int64(0); i > 0 && i < l; {
-		s := 'a'
 		if i > 0 {
 			prev = r[i-1]
-			if r[i] >= 'a' {
-				s = r[i] + 1
-			}
+		}
+
+		if r[i] >= 'a' {
+			s = r[i] + 1
 		}
 
 		found := false
-		options := getOptions(s)
+		options := getOptions(s, prev)
 
 		t := r[i]
 		for _, ch := range options {
-			if !bl[prev][ch] {
-				t = ch
-				found = true
-			}
+			t = ch
+			found = true
+			break
 		}
 
 		if found {
-			i++
-			count[t]++
-			r[i] = t
-		} else {
 			count[t]--
+			r[i] = t
+			i++
+		} else {
+			r[i] = empty
+			count[t]++
 			i--
 		}
+
+		fmt.Println(string(r), count)
 	}
 
 	return string(r)
