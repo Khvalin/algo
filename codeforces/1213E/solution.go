@@ -2,41 +2,34 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
 const empty = '!'
+const nmax = 4
 
-func solve(n uint32, s1, s2 []rune) (bool, string) {
-	const ABC = "abc"
-
-	m := uint32(2)
-	if n < m {
-		m = n
-	}
-	l := int64(3 * m)
-
-	count := map[rune]uint32{
-		'a': m,
-		'b': m,
-		'c': m,
-	}
+func sample(n uint32, bl map[rune]map[rune]bool, abc string) (bool, string, uint32) {
+	l := int64(3 * n)
 
 	r := make([]rune, l)
-	bl := map[rune]map[rune]bool{}
 
-	for _, ch := range [...]rune{'a', 'b', 'c', empty} {
-		bl[ch] = map[rune]bool{}
+	count := map[rune]uint32{
+		'a': n,
+		'b': n,
+		'c': n,
 	}
 
-	bl[s1[0]][s1[1]] = true
-	bl[s2[0]][s2[1]] = true
+	order := map[rune]int{}
+
+	order[empty] = 0
+	for i, ch := range abc {
+		order[ch] = i + 1
+	}
 
 	getOptions := func(min, prev rune) rune {
 		//TODO: add order
 
-		for _, ch := range ABC {
-			if ch >= min && count[ch] > 0 && !bl[prev][ch] {
+		for i, ch := range abc {
+			if (min == empty || i > order[min]) && count[ch] > 0 && !bl[prev][ch] {
 				return ch
 			}
 		}
@@ -44,7 +37,7 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 		return empty
 	}
 
-	i := int64(0)
+	i, c := int64(0), uint32(0)
 	for i >= 0 && i < l {
 		prev, s := empty, empty
 
@@ -53,7 +46,7 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 		}
 
 		if r[i] > empty {
-			s = r[i] + 1
+			s = r[i]
 		}
 
 		found := false
@@ -73,62 +66,47 @@ func solve(n uint32, s1, s2 []rune) (bool, string) {
 					r[i+1] = empty
 				}
 			}
+			c++
 		}
 
-		//	fmt.Println(string(r), count)
 	}
 
-	if i < 0 {
-		return false, ""
+	return i > 0, string(r), c
+}
+
+func solve(n uint32, s1, s2 []rune) (bool, string) {
+	variants := []string{"abc", "bac", "cab", "cba", "bca", "acb"}
+	abc := ""
+
+	var m uint32 = 8
+	if n < m {
+		m = n
 	}
 
-	res := string(r)
-	 if n > m {
-		res = strings.Repeat(res, int(n>>1))
+	bl := map[rune]map[rune]bool{}
 
-		if n%2 > 0 {
-			r = []rune{empty, empty, empty}
+	for _, ch := range [...]rune{'a', 'b', 'c', empty} {
+		bl[ch] = map[rune]bool{}
+	}
 
-			count['a'] = 1
-			count['b'] = 1
-			count['c'] = 1
+	bl[s1[0]][s1[1]] = true
+	bl[s2[0]][s2[1]] = true
 
-			for i := 0; i < 3 && i >= 0; {
-				prev, s := rune(res[len(res)-1]), empty
-
-				if i > 0 {
-					prev = r[i-1]
-				}
-
-				if r[i] > empty {
-					s = r[i] + 1
-				}
-
-				found := false
-				next := getOptions(s, prev)
-
-				found = next != empty
-
-				if found {
-					count[next]--
-					r[i] = next
-					i++
-				} else {
-					i--
-					if i >=0 && r[i] > empty {
-						count[r[i]]++
-						if i < len(r)-1 {
-							r[i+1] = empty
-						}
-					}
-				}
-			}
-
-			res += string(r)
+	min := uint32(65536)
+	for _, v := range variants {
+		f, _, c := sample(m, bl, v)
+		if f && c < min {
+			min, abc = c, v
 		}
-	} 
+	}
 
-	return true, res
+	if len(abc) == 0 {
+		return false, abc
+	}
+
+	f, s, _ := sample(n, bl, abc)
+
+	return f, s
 }
 
 func main() {
