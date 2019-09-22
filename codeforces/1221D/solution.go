@@ -11,24 +11,42 @@ type state struct {
 	prev  uint32
 }
 
-func solve(a, b []uint32) uint64 {
-	m := map[state]uint64{}
+func solve(a, b []uint32) float64 {
+	m := map[state]float64{}
 
-	var f func(index int, prev uint32) uint64
-	f = func(index int, prev uint32) uint64 {
+	var f func(index int, prev uint32) float64
+	f = func(index int, prev uint32) float64 {
 		if index > len(a)-1 {
 			return 0
 		}
 
 		s := state{index, prev}
+		res, has := m[s]
+		if has {
+			return res
+		}
 
+		r := 10e18 + 1
 		for h := uint32(0); h < 3; h++ {
+			t := r
 			if a[index]+h != prev {
+				t = float64(h*b[index]) + (f(index+1, a[index]+h))
+			}
 
+			if t < r {
+				r = t
 			}
 		}
+
+		m[s] = r
+
+		return r
 	}
-	return 0
+
+	res := f(0, a[0]-1)
+	//fmt.Println(m)
+
+	return res
 }
 
 func toInt(buf []byte) uint32 {
@@ -60,9 +78,11 @@ func main() {
 		for j := range a {
 			scanner.Scan()
 			a[j] = toInt(scanner.Bytes())
+
+			scanner.Scan()
 			b[j] = toInt(scanner.Bytes())
 		}
 
-		fmt.Println(solve(a, b))
+		fmt.Printf("%.0f\n", solve(a, b))
 	}
 }
