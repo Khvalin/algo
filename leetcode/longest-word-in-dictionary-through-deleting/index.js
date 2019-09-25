@@ -16,10 +16,10 @@ var findLongestWord = function(s, d) {
 
   for (const ch of s) {
     next[ch] = next[ch] || []
-    const cur = [ ...next[ch] ]
-    next[ch] = []
+    const len = next[ch].length
 
-    for (const p of cur) {
+    for (let i = 0; i < len; i++) {
+      const p = next[ch].shift()
       p.ci++
 
       const w = d[p.wi]
@@ -30,9 +30,9 @@ var findLongestWord = function(s, d) {
         }
       }
 
-      const ch = w[p.ci]
-      next[ch] = next[ch] || []
-      next[ch].push(p)
+      const c = w[p.ci]
+      next[c] = next[c] || []
+      next[c].push(p)
     }
   }
 
