@@ -3,16 +3,20 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
+	"strings"
 )
 
-var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
+/* var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 
 func printf(f string, a ...interface{}) { fmt.Fprintf(writer, f, a...) }
-
+*/
 func toInt(buf []byte) (n uint32) {
 	for _, v := range buf {
-		n = n*10 + uint32(v-'0')
+		if v >= '0' && v <= '9' {
+			n = n*10 + uint32(v-'0')
+		}
 	}
 	return
 }
@@ -42,35 +46,38 @@ type index struct {
 }
 */
 func main() {
-	defer writer.Flush()
+	reader := bufio.NewReaderSize(os.Stdin, math.MaxInt32)
 
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-
-	scanner.Scan()
-	toInt(scanner.Bytes())
+	reader.ReadLine()
 
 	m := make([]uint32, 200000*30)
 
-	scanner.Scan()
-	str := scanner.Text()
 	a := [30]uint32{}
 
-	for i, ch := range str {
-		c := ch - 'a'
-		a[c]++
+	for isPrefix := true; isPrefix; {
+		var str []byte
+		str, isPrefix, _ = reader.ReadLine()
 
-		m[a[c]*30+uint32(c)] = uint32(i)
+		for i, ch := range str {
+			c := ch - 'a'
+			a[c]++
+
+			m[a[c]*30+uint32(c)] = uint32(i)
+		}
 	}
 
-	scanner.Scan()
-	n := toInt(scanner.Bytes())
+	bytes, _ := reader.ReadBytes('\n')
+	n := toInt(bytes)
 
 	for i := uint32(0); i < n; i++ {
-		scanner.Scan()
-		t := scanner.Text()
+		t, _ := reader.ReadString('\n')
 
-		r := solve(m, t) + 1
-		printf("%d\n", r)
+		t = strings.Trim(t, "\r\n")
+		if len(t) > 0 {
+			r := solve(m, t) + 1
+			fmt.Println(r)
+		}
 	}
+
+	//	writer.Flush()
 }
