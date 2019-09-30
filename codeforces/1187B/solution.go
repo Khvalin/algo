@@ -3,15 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strings"
 )
 
-/* var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
+const nmax = 200000 + 1
+
+ var writer = bufio.NewWriter(os.Stdout)
 
 func printf(f string, a ...interface{}) { fmt.Fprintf(writer, f, a...) }
-*/
+
 func toInt(buf []byte) (n uint32) {
 	for _, v := range buf {
 		if v >= '0' && v <= '9' {
@@ -39,18 +40,12 @@ func solve(m []uint32, t string) uint32 {
 	return max
 }
 
-/*
-type index struct {
-	ch    rune
-	count uint32
-}
-*/
 func main() {
-	reader := bufio.NewReaderSize(os.Stdin, math.MaxInt32)
+	reader := bufio.NewReaderSize(os.Stdin, nmax)
 
 	reader.ReadLine()
 
-	m := make([]uint32, 200000*30)
+	m := make([]uint32, nmax*30)
 
 	a := [30]uint32{}
 
@@ -75,9 +70,10 @@ func main() {
 		t = strings.Trim(t, "\r\n")
 		if len(t) > 0 {
 			r := solve(m, t) + 1
-			fmt.Println(r)
+			
+			printf("%d\n",r)
 		}
 	}
 
-	//	writer.Flush()
+		writer.Flush()
 }
