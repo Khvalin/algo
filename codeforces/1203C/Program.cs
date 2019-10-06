@@ -12,10 +12,21 @@ namespace _1203C {
       string[] s = Console.ReadLine ().Split (' ');
 
       for (ulong i = 0; i < n; i++) {
-        arr[i] = UInt64.Parse (s[i]);
+        ulong a = 0;
+        foreach (char ch in s[i]) {
+          a *= 10;
+          a += (ulong) (ch - '0');
+        }
+        arr[i] = a;
       }
 
       return arr.AsEnumerable ();
+    }
+
+    static ulong GCD (ulong a, ulong b) {
+      if (a == 0)
+        return b;
+      return GCD (b % a, a);
     }
 
     static int Solve (IEnumerable<ulong> input) {
@@ -26,36 +37,27 @@ namespace _1203C {
       }
 
       ulong min = (input.ElementAt (0));
+      ulong max = (input.ElementAt (0));
       foreach (ulong n in input) {
-        if (n < min) {
-          min = n;
-        }
+        min = Math.Min (min, n);
+        max = Math.Max (max, n);
       }
 
-      res.Add (min);
-      Console.WriteLine (min);
+      var g = GCD (min, max);
 
-      for (ulong i = 2; i <= min / 2; i++) {
-        if (min % i == 0) {
+      foreach (ulong n in input) {
+        g = GCD (n, g);
+      }
+
+      for (ulong i = 2; i <= Math.Sqrt (g); i++) {
+        if (g % i == 0) {
           res.Add (i);
-        }
-      }
-
-      foreach (ulong n in input) {
-        if (n == min) {
-          continue;
-        }
-
-        //        Console.WriteLine (String.Join (' ', res));
-
-        foreach (ulong m in res) {
-          if (n % m > 0) {
-            res.Remove (m);
-          }
+          res.Add (g / i);
         }
       }
 
       res.Add (1);
+      res.Add (g);
 
       return res.Count ();
     }
