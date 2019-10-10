@@ -1,14 +1,62 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace _1234D
 {
-  class Solution{
-    string input;
+  class Solution
+  {
+    const int NMAX = 'z' - 'a' + 1;
+    char[] input;
+    SortedSet<ulong>[] indices = new SortedSet<ulong>[NMAX];
 
-    public Solution(string s) {
-      this.input = s;
+    public void ReplaceChar(ulong pos, char newChar)
+    {
+      char oldChar = this.input[pos];
+      this.input[pos] = newChar;
+
+      if (oldChar == newChar)
+      {
+        return;
+      }
+
+      this.indices[oldChar - 'a'].Remove(pos);
+      this.indices[newChar - 'a'].Add(pos);
+    }
+
+    public int CountUniqueChars(ulong l, ulong r)
+    {
+      int res = 0;
+      foreach (var s in this.indices)
+      {
+        if (s != null && s.GetViewBetween(l, r).Count > 0)
+        {
+          res++;
+        }
+      }
+
+      return res;
+    }
+
+    public Solution(string s)
+    {
+      this.input = s.ToCharArray();
+
+      for (int i = 0; i < s.Length; i++)
+      {
+        char ch = s[i];
+
+        int j = ch - 'a';
+        if (indices[j] == null)
+        {
+          indices[j] = new SortedSet<ulong>();
+        }
+
+        indices[j].Add((ulong)i);
+      }
+
+      Console.Write(String.Join(' ', indices[1]));
     }
   }
 
@@ -16,83 +64,31 @@ namespace _1234D
   {
     static void Main(string[] args)
     {
-      using (Stream stdin = Console.OpenStandardInput())
+      string s = Console.ReadLine();
+      Solution sol = new Solution(s);
+
+      ulong q = ulong.Parse(Console.ReadLine());
+
+      for (ulong i = 0; i < q; i++)
       {
-        string s = ReadStringFromStream(stdin);
-        ulong q = ReadUlongFromStream(stdin);
+        var testCase = Console.ReadLine().Split();
+        var pos = ulong.Parse(testCase[1]);
 
-        for (ulong i = 0; i < q;i++){
-          ulong c  = ReadUlongFromStream(stdin);
-          ulong pos  = ReadUlongFromStream(stdin);
+        if (testCase[0][0] == '1')
+        {
+          var ch = testCase[2][0];
+          sol.ReplaceChar(pos - 1, ch);
+        }
 
-          if (c == 1) {
-            char ch = ReadCharFromStream(stdin);
-          } else {
-            ulong r = ReadUlongFromStream(stdin);
-          }
+        if (testCase[0][0] == '2')
+        {
+          var r = ulong.Parse(testCase[2]);
+          var res = sol.CountUniqueChars(pos - 1, r - 1);
+          Console.WriteLine(res);
         }
       }
     }
 
-        static string ReadStringFromStream(Stream stream)
-    {
-      StringBuilder sb = new StringBuilder();
-
-      while (stream.CanRead)
-      {
-        int b = stream.ReadByte();
-        if (b == -1)
-        {
-          break;
-        }
-
-        char ch = (char)b;
-
-        if (ch == '\n')
-        {
-          break;
-        }
-
-        sb.Append(ch);
-      }
-
-      return sb.ToString();
-    }
-
-    static char ReadCharFromStream(Stream stream)
-    {
-      char ch = (char) stream.ReadByte() ;
-
-      return ch;
-    }
-
-    static ulong ReadUlongFromStream(Stream stream)
-    {
-      ulong n = 0;
-      bool f = false;
-
-      while (stream.CanRead)
-      {
-        int b = stream.ReadByte();
-        int d = b - '0';
-
-        if (d < 0 || d > 9)
-        {
-          if (f)
-          {
-            break;
-          }
-
-          continue;
-        }
-        f = true;
-
-        n *= 10;
-        n += (ulong)d;
-      }
-
-      return n;
-    }
   }
 }
 
