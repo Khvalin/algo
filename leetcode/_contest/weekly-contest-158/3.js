@@ -16,17 +16,20 @@ var dieSimulator = function(n, rollMax) {
   let roll = [ 1, 1, 1, 1, 1, 1 ]
 
   for (let i = 1; i < n; i++) {
-    for (let j = 0; j < rollMax.length; j++) {
+    const prev = [ ...roll ]
+    for (let j = 0; j < roll.length; j++) {
       let s = 0
       for (let k = 0; k < 6; k++) {
-        if (i % rollMax[k] !== 0) {
-          s += roll[k]
+        s += prev[k]
+        if (i % rollMax[k] === 0 && j === k) {
+          s -= 1
         }
       }
 
       roll[j] = s % NMAX
-      //      roll[j] %= NMAX
     }
+
+    console.log(roll)
   }
 
   let r = 0
@@ -38,10 +41,10 @@ var dieSimulator = function(n, rollMax) {
   return r
 }
 
-// let n = 2,
-//   rollMax = [ 1, 1, 1, 2, 2, 3 ]
-// console.log(dieSimulator(n, rollMax))
+let n = 2,
+  rollMax = [ 1, 1, 1, 2, 2, 3 ]
+console.log(dieSimulator(n, rollMax))
 
-// console.log(dieSimulator(2, [ 1, 1, 1, 1, 1, 1 ]))
+console.log(dieSimulator(2, [ 1, 1, 1, 1, 1, 1 ]))
 
-console.log(dieSimulator(3, [ 1, 1, 1, 2, 2, 3 ]))
+console.log(dieSimulator(3, [ 1, 1, 1, 20, 2, 3 ]))
