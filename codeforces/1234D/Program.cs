@@ -9,28 +9,52 @@ namespace _1234D
   {
     const int NMAX = 'z' - 'a' + 1;
     char[] input;
-    SortedSet<ulong>[] indices = new SortedSet<ulong>[NMAX];
+    List<ulong[]> BIT = new List<ulong[]>();
 
-    public void ReplaceChar(ulong pos, char newChar)
+    public void ReplaceChar(int pos, char newChar)
     {
-      char oldChar = this.input[pos];
-      this.input[pos] = newChar;
+      var prev = this.input[pos];
+      Console.WriteLine("{0} {0} {0}", pos, prev, newChar);
 
-      if (oldChar == newChar)
+      while (pos < this.BIT.Count)
       {
-        return;
-      }
+        this.BIT[pos][prev - 'a'] --;
+        this.BIT[pos][newChar - 'a'] ++;
 
-      this.indices[oldChar - 'a'].Remove(pos);
-      this.indices[newChar - 'a'].Add(pos);
+        pos += (pos & -pos);
+      }
     }
 
-    public int CountUniqueChars(ulong l, ulong r)
+    private ulong[] prefixSum(int i)
+    {
+      var res = new ulong[NMAX];
+
+      while (i != 0)
+      {
+        for (var k = 0; k < NMAX; k++)
+        {
+          res[k] += this.BIT[i][k];
+        }
+
+        i -= (i & -i);
+      }
+
+      return res;
+    }
+
+    public int CountUniqueChars(int l, int r)
     {
       int res = 0;
-      foreach (var s in this.indices)
+
+      var left = this.prefixSum(l - 1);
+      var right = this.prefixSum(r);
+
+      Console.WriteLine(String.Join(", ", left));
+      Console.WriteLine(String.Join(", ", right));
+
+      for (var i = 0; i < NMAX; i++)
       {
-        if (s != null && s.GetViewBetween(l, r).Count > 0)
+        if (right[i] - left[i] != 0)
         {
           res++;
         }
@@ -43,20 +67,33 @@ namespace _1234D
     {
       this.input = s.ToCharArray();
 
+      BIT = new List<ulong[]>();
+      BIT.Add(new ulong[NMAX]);
+
       for (int i = 0; i < s.Length; i++)
       {
-        char ch = s[i];
+        BIT.Add(new ulong[NMAX]);
 
-        int j = ch - 'a';
-        if (indices[j] == null)
+        if (i < s.Length)
         {
-          indices[j] = new SortedSet<ulong>();
-        }
+          var ch = s[i];
 
-        indices[j].Add((ulong)i);
+          this.BIT[i+1][ch - 'a'] += 1;
+        }
       }
 
-      Console.Write(String.Join(' ', indices[1]));
+      for (int i = 1; i <= s.Length; i++)
+      {
+        var j = i + (i & -i);
+
+        if (j <= s.Length)
+        {
+          for (var k = 0; k < NMAX; k++)
+          {
+            this.BIT[j][k] += this.BIT[i][k];
+          }
+        }
+      }
     }
   }
 
@@ -72,18 +109,19 @@ namespace _1234D
       for (ulong i = 0; i < q; i++)
       {
         var testCase = Console.ReadLine().Split();
-        var pos = ulong.Parse(testCase[1]);
+        var pos = int.Parse(testCase[1]);
 
         if (testCase[0][0] == '1')
         {
           var ch = testCase[2][0];
-          sol.ReplaceChar(pos - 1, ch);
+          sol.ReplaceChar(pos, ch);
         }
 
         if (testCase[0][0] == '2')
         {
-          var r = ulong.Parse(testCase[2]);
-          var res = sol.CountUniqueChars(pos - 1, r - 1);
+          var r = int.Parse(testCase[2]);
+          var res = sol.CountUniqueChars(pos, r);
+
           Console.WriteLine(res);
         }
       }
