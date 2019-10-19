@@ -7,22 +7,22 @@ import (
 	"sort"
 )
 
-type UInt64Slice []uint64
+type UInt64Slice []int64
 
 func (p UInt64Slice) Len() int           { return len(p) }
 func (p UInt64Slice) Less(i, j int) bool { return p[i] < p[j] }
 func (p UInt64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
-func toInt(buf []byte) uint64 {
-	var n uint64
+func toInt(buf []byte) int64 {
+	var n int64
 	for _, v := range buf {
-		n = n*10 + uint64(v-'0')
+		n = n*10 + int64(v-'0')
 	}
 	return n
 }
 
-func readInput() (UInt64Slice, uint64) {
-	var k uint64
+func readInput() (UInt64Slice, int64) {
+	var k int64
 
 	n := 0
 
@@ -39,52 +39,57 @@ func readInput() (UInt64Slice, uint64) {
 	return a, k
 }
 
-func solve(a UInt64Slice, k int64) uint64 {
+func solve(a UInt64Slice, k int64) int64 {
 	n := len(a)
 
 	for k > 0 {
-		fmt.Println(a, k)
-
 		if a[n-1] == a[0] {
 			break
 		}
 
-		l := sort.Search(n, func(i int) bool {
+		l := int64(sort.Search(n, func(i int) bool {
 			return a[i] > a[0]
-		})
+		}))
 
-		r := sort.Search(n, func(i int) bool {
+		r := int64(sort.Search(n, func(i int) bool {
 			return a[n-i-1] < a[len(a)-1]
-		})
+		}))
 
-		if l <= r {
-			d := a[l] - a[0]
-			dk := int64(d)
+		dl := a[l] - a[0]
+		if dl*l > k {
+			dl = (dl * l) / k
+		}
+
+		dr := a[n-1] - a[n-int(r)-1]
+		if r*dr > k {
+			dr = (r * dr) / k
+		}
+
+		/* 		fmt.Println(a)
+		   		fmt.Println(l, dl)
+		   		fmt.Println(r, dr) */
+
+		if dl*l < r*dr {
 			for i := l - 1; k > 0 && i >= 0; i-- {
-				if k >= dk {
-					a[i] += d
-					k -= dk
-				} else {
-					k = 0
+				if k < dl {
+					dl = (k)
+				}
+				a[i] += dl
+				k -= dl
+			}
+		} else {
+			r = int64(n) - r
+
+			for i := r; i < int64(n) && k > 0; i++ {
+				if k < dr {
+					dr = (k)
 				}
 
+				a[i] -= dr
+				k -= dr
 			}
-			continue
 		}
-
-		r = n - r
-		d := a[n-1] - a[r-1]
-		dk := int64(d)
-
-		for i := r; i < n && k > 0; i++ {
-			if k < dk {
-				d = uint64(k)
-				dk = k
-			}
-
-			a[i] -= d
-			k -= dk
-		}
+		/* 		fmt.Println(a) */
 	}
 
 	return a[n-1] - a[0]
@@ -94,7 +99,7 @@ func main() {
 	a, k := readInput()
 	sort.Sort(a)
 
-	r := solve(a, int64(k))
+	r := solve(a, (k))
 
 	fmt.Println(r)
 }
