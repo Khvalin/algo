@@ -1,0 +1,11 @@
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.csprojAssemblyReference.cache
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.csproj.CoreCompileInputs.cache
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.AssemblyInfoInputs.cache
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.AssemblyInfo.cs
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/bin/Debug/netcoreapp2.2/csharp.deps.json
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/bin/Debug/netcoreapp2.2/csharp.runtimeconfig.json
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/bin/Debug/netcoreapp2.2/csharp.runtimeconfig.dev.json
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/bin/Debug/netcoreapp2.2/csharp.dll
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/bin/Debug/netcoreapp2.2/csharp.pdb
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.dll
+/usr/local/google/home/kkhvalin/code/csharp/toss-strange-coins/obj/Debug/netcoreapp2.2/csharp.pdb
