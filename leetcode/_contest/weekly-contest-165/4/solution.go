@@ -4,16 +4,16 @@ import "fmt"
 
 func palindromePartition(str string, k int) int {
 	const nmax = 110
-	memo := map[uint]int{}
+	wordMemo := map[uint]int{}
 
 	var calc func(s, e int) int
 	calc = func(s, e int) int {
 		if s > e {
-			return 65536
+			return nmax
 		}
 
 		key := uint(s*nmax + e)
-		r, f := memo[key]
+		r, f := wordMemo[key]
 		if f {
 			return r
 		}
@@ -26,95 +26,60 @@ func palindromePartition(str string, k int) int {
 			}
 		}
 
-		memo[key] = r
+		wordMemo[key] = r
 
 		return r
 	}
 
-	l := len(str)
-	p := [nmax]int{}
-	for i := 0; i < k; i++ {
-		p[i] = 1
-	}
-	m := l - k + 1
-	p[0] = m
-
-	perms := [][nmax]int{p}
-
-	res := 65536
-
-	for len(perms) > 0 {
-		p := &perms[0]
-		/* 		for i := 0; i < k+4; i++ {
-		   			fmt.Print(p[i], " ")
-		   		}
-		   			fmt.Println(res) */
-
-		j := p[k+2]
-
-		if p[0] < 1 || p[k] > 0 {
-			perms = perms[1:]
-		}
-
-		if p[0] < 1 || p[k] > 0 {
-			continue
-		}
-
-		s := 0
-		l := 0
-		for i := 0; i < k; i++ {
-			n := p[i]
-			s += calc(l, l+n-1)
-			l += n
-		}
-
-		if s < res {
-			res = s
-		}
-
-		valid := true
-		for j < k-1 && p[j] == 1 {
-			valid = false
-			j++
-		}
-		if j >= k-1 {
-			j = 0
-		}
-
-		p[k+2] = j
-
-		p[j]--
-		j++
-		p[j]++
-
-		nextP := [nmax]int{}
-
-		valid = valid && p[j] < m && j < k-1 && p[j] > 1
-
-		for i := 0; i < k+3; i++ {
-			if p[i] < 1 && i < k {
-				valid = false
-				break
+	memo := map[uint]int{}
+	var solve func(start, k int) int
+	solve = func(start, k int) int {
+		res := nmax
+		if start >= len(str) {
+			if k == 0 {
+				return 0
 			}
-			nextP[i] = p[i]
+
+			return res
 		}
 
-		if valid {
-			nextP[k+2] = j + 1
-			perms = append(perms, nextP)
+		if k < 0 {
+			return res
 		}
 
+		key := uint(start*nmax + k)
+		r, f := memo[key]
+		if f {
+			return r
+		}
+
+		s := start
+		if k == 1 {
+			s = len(str) - 1
+		}
+
+		for i := s; i < len(str); i++ {
+			t := calc(start, i) + solve(i+1, k-1)
+			if t < res {
+				res = t
+			}
+		}
+
+		memo[key] = res
+
+		return res
 	}
 
-	return res
+	return solve(0, k)
 }
 
 func main() {
 	r := 0
-	r = palindromePartition("oiwwhqjkb", 1)
-	fmt.Println(r)
 
-	r = palindromePartition("abc", 3)
+	r = palindromePartition("abc", 2)
+	fmt.Println(1, r)
+
+	r = palindromePartition("oiwwhqjkb", 1)
 	fmt.Println(r)
 
 	r = palindromePartition("aabbc", 3)
