@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 //number-of-ships-in-a-rectangle
 namespace number_of_ships_in_a_rectangle {
@@ -13,8 +14,22 @@ namespace number_of_ships_in_a_rectangle {
    */
 
   class Sea {
+    private int[][] ships;
+    public int count;
+
+    public Sea (int[][] ships) {
+      this.ships = ships;
+    }
+
     public bool HasShips (int[] topRight, int[] bottomLeft) {
-      return true;
+      this.count++;
+      foreach (var ship in this.ships) {
+        if (ship[0] >= bottomLeft[0] && ship[0] <= topRight[0] && ship[1] >= bottomLeft[1] && ship[1] <= topRight[1]) {
+          return true;
+        }
+      }
+
+      return false;
     }
   }
 
@@ -26,9 +41,10 @@ namespace number_of_ships_in_a_rectangle {
 
       var cache = new System.Collections.Generic.Dictionary<string, bool> ();
 
-      while (points.Count > 0) {
-        var p = points[0];
-        points.RemoveAt (0);
+      while (points.Count > 0 && r < 10) {
+        var ind = 0;
+        var p = points[ind];
+        points.RemoveAt (ind);
         var key = String.Join (' ', p);
         if (cache.ContainsKey (key)) {
           continue;
@@ -47,7 +63,10 @@ namespace number_of_ships_in_a_rectangle {
             continue;
           }
 
-          points.AddRange (this.Split (topRight, bottomLeft));
+          var split = this.Split (topRight, bottomLeft);
+
+          points.AddRange (split);
+          // Console.WriteLine ("{0} {1} {2}", points.Count, JsonSerializer.Serialize (p), JsonSerializer.Serialize (split));
         }
       }
 
@@ -55,29 +74,95 @@ namespace number_of_ships_in_a_rectangle {
     }
 
     private IEnumerable<int[]> Split (int[] topRight, int[] bottomLeft) {
+      var dx = Math.Abs (topRight[0] - bottomLeft[0]);
+      var dy = Math.Abs (topRight[1] - bottomLeft[1]);
+
+      if (dx >= dy && dx <= 1) {
+        if (dx == 0 || dy == 0) {
+          return (new int[][] {
+            //new int[] { bottomLeft[0], bottomLeft[1], bottomLeft[0], bottomLeft[1] },
+            //  new int[] { topRight[0], topRight[1], topRight[0], topRight[1] },
+            new int[] { bottomLeft[0], topRight[1], bottomLeft[0], topRight[1] },
+              new int[] { topRight[0], bottomLeft[1], topRight[0], bottomLeft[1], }
+          });
+        }
+
+        return (new int[][] {
+          new int[] { bottomLeft[0], bottomLeft[1], bottomLeft[0], bottomLeft[1] },
+            new int[] { topRight[0], topRight[1], topRight[0], topRight[1] },
+            new int[] { bottomLeft[0], topRight[1], bottomLeft[0], topRight[1] },
+            new int[] { topRight[0], bottomLeft[1], topRight[0], bottomLeft[1], }
+        });
+      }
+
       int[] mid = new int[] { bottomLeft[0], bottomLeft[1] };
 
-      mid[0] += (Math.Abs (topRight[0] - bottomLeft[0]) >> 1);
-      mid[1] += (Math.Abs (topRight[1] - bottomLeft[1]) >> 1);
+      mid[0] += dx >> 1;
+      mid[1] += dy >> 1;
+
+      if (dx >= 5 && mid[0] % 2 == 0) {
+        mid[0] -= 1;
+      }
+
+      if (dy >= 5 && mid[1] % 2 == 0) {
+        mid[1] -= 1;
+      }
 
       return (new int[][] {
-        new int[] { bottomLeft[0], bottomLeft[1], mid[0], mid[1] },
+        new int[] { bottomLeft[0], bottomLeft[1], mid[0] - mid[0] % 2, mid[1] - mid[1] % 2 },
           new int[] { bottomLeft[0], mid[1], mid[0], topRight[1] },
-          new int[] { mid[0], mid[1], topRight[0], topRight[1] },
+          new int[] { mid[0] + mid[0] % 2, mid[1] + mid[1] % 2, topRight[0], topRight[1] },
           new int[] { mid[0], bottomLeft[1], topRight[0], mid[1] }
       });
     }
   }
 
   class Program {
-    static void Main (string[] args) {
+    static void Test51 () {
       var sol = new Solution ();
-      var sea = new Sea ();
+      var ships = JsonSerializer.Deserialize<int[][]> ("[[53,118],[373,246],[121,625],[805,303],[383,532],[982,664],[453,122],[347,106]]");
+      var sea = new Sea (ships);
 
-      var topRight = new int[] { 4, 4 };
+      var topRight = new int[] { 1000, 1000 };
       var bottomLeft = new int[] { 0, 0 };
+      Console.WriteLine (sol.CountShips (sea, topRight, bottomLeft) + " " + sea.count);
+    }
 
-      Console.WriteLine (sol.CountShips (sea, topRight, bottomLeft));
+    static void Test53 () {
+      var sol = new Solution ();
+      var ships = JsonSerializer.Deserialize<int[][]> ("[[556,290],[286,960],[728,419],[770,159],[743,306],[674,140],[37,232],[515,544],[883,449]]");
+      var sea = new Sea (ships);
+
+      var topRight = new int[] { 1000, 1000 };
+      var bottomLeft = new int[] { 0, 0 };
+      Console.WriteLine (sol.CountShips (sea, topRight, bottomLeft) + " " + sea.count);
+    }
+
+    static void Test56 () {
+      var sol = new Solution ();
+      var ships = JsonSerializer.Deserialize<int[][]> ("[[334,428],[137,522],[772,606],[143,341],[449,783],[784,453],[958,782],[682,500],[845,228],[125,238]]");
+      var sea = new Sea (ships);
+
+      var topRight = new int[] { 1000, 1000 };
+      var bottomLeft = new int[] { 0, 0 };
+      Console.WriteLine (sol.CountShips (sea, topRight, bottomLeft) + " " + sea.count);
+    }
+
+    static void Test56_1 () {
+      var sol = new Solution ();
+      var ships = JsonSerializer.Deserialize<int[][]> ("[[658,635],[617,840],[514,853],[507,332]]");
+      var sea = new Sea (ships);
+
+      var topRight = new int[] { 1000, 1000 };
+      var bottomLeft = new int[] { 0, 0 };
+      Console.WriteLine ("{0} {1} {2}", 4, sol.CountShips (sea, topRight, bottomLeft), sea.count);
+    }
+
+    static void Main (string[] args) {
+      Test51 ();
+      Test53 ();
+      Test56 ();
+      Test56_1 ();
     }
   }
 }
