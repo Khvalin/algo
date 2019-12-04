@@ -66,7 +66,7 @@ namespace number_of_ships_in_a_rectangle {
           var split = this.Split (topRight, bottomLeft);
 
           points.AddRange (split);
-          // Console.WriteLine ("{0} {1} {2}", points.Count, JsonSerializer.Serialize (p), JsonSerializer.Serialize (split));
+          //   Console.WriteLine ("{0} {1} {2}", points.Count, JsonSerializer.Serialize (p), JsonSerializer.Serialize (split));
         }
       }
 
@@ -100,12 +100,12 @@ namespace number_of_ships_in_a_rectangle {
       mid[0] += dx >> 1;
       mid[1] += dy >> 1;
 
-      if (dx >= 5 && mid[0] % 2 == 0) {
-        mid[0] -= 1;
+      if (dx > 250 && mid[0] % 2 == 0) {
+        mid[0] += 3;
       }
 
-      if (dy >= 5 && mid[1] % 2 == 0) {
-        mid[1] -= 1;
+      if (dy > 250 && mid[1] % 2 == 0) {
+        mid[1] += 3;
       }
 
       return (new int[][] {
@@ -159,10 +159,10 @@ namespace number_of_ships_in_a_rectangle {
     }
 
     static void Main (string[] args) {
-      Test51 ();
-      Test53 ();
-      Test56 ();
+      // Test51 ();
+      // Test53 ();
       Test56_1 ();
+      Test56 ();
     }
   }
 }
