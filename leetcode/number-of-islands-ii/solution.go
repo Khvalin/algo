@@ -21,8 +21,7 @@ func numIslands2(n int, m int, operators []*Point) []int {
 	components := make([]int, l)
 
 	c := 0
-	res := make([]int, l+1)
-	//res[l] = -1
+	res := make([]int, l)
 
 	for i, op := range operators {
 		if _, found := points[*op]; !found {
@@ -33,8 +32,8 @@ func numIslands2(n int, m int, operators []*Point) []int {
 
 			for _, p := range pts {
 				if ind, f := points[p]; f {
-					if v := components[ind]; v != cIndex {
-						cIndex = v
+					if ind < cIndex {
+						cIndex = ind
 					}
 				}
 			}
@@ -47,13 +46,15 @@ func numIslands2(n int, m int, operators []*Point) []int {
 
 			unique := map[int]bool{}
 			for _, p := range pts {
-				if ind, f := points[p]; f && components[ind] != cIndex {
+				if ind, f := points[p]; f && ind != cIndex {
 					v := components[ind]
+
 					if !unique[v] {
 						unique[v] = true
 						c--
 					}
-					components[ind] = cIndex
+					components[ind] = components[cIndex]
+					points[p] = cIndex
 				}
 			}
 		}
