@@ -21,13 +21,11 @@ CombinationIterator.prototype.next = function() {
     res += this.chars[i];
   }
 
-  let i;
-  for (i = this.indices.length - 1; i >= 0; i--) {
+  let i = this.indices.length - 1;
+  let skip = true;
+  for (; i >= 0 && skip; i--) {
     const ind = this.indices[i];
-    if (ind === this.chars.length - 1 || this.indices[i + 1] === ind + 1) {
-      continue;
-    }
-    break;
+    skip = ind === this.chars.length - 1 || this.indices[i + 1] === ind + 1;
   }
 
   this.indices[i]++;
