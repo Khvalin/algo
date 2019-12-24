@@ -6,12 +6,14 @@
 var isPossibleDivide = function (nums, k) {
   const d = {};
 
+  // count occurances and store into a map
   for (const n of nums) {
     d[n] = d[n] || 0;
     d[n]++;
   }
 
-  let roots = [];
+  // "root" is the starting number of each sequence.
+  const roots = [];
   for (const n of nums) {
     if (!d[n - 1]) {
       roots.push(n);
@@ -19,7 +21,7 @@ var isPossibleDivide = function (nums, k) {
   }
 
   while (roots.length > 0) {
-    let r = roots.shift();
+    const r = roots.shift();
     if (d[r] <= 0) {
       continue;
     }
