@@ -64,19 +64,30 @@ func solve(n uint32, p [NMAX]uint32) uint32 {
       }
     }
     
+    prev := uint32(0)
+    if i > 0 {
+      prev = p[i - 1]
+      if prev == 0 {
+        prev = s.last
+      }
+    }
+    
     if i < n && p[i] == 0 {
       r1, r2 := INFINITY, INFINITY
       if s.odds > 0 {
         next := State{index: i + 1, odds: s.odds - 1, evens: s.evens, last: 1}
         r1 = solve(next)
-        if i > 0 && p[i - 1] == 0 {
-          // TODO
+        if i > 0 && (prev % 2 == 0) {
+          r1++
         }
       }
       
       if s.evens > 0 {
         next := State{index: i + 1, odds: s.odds, evens: s.evens - 1}
         r2 = solve(next)
+        if i > 0 && (prev % 2 > 0) {
+          r2++
+        }
       }
 
       if r1 > r2 {
