@@ -6,78 +6,73 @@ import (
 	"os"
 )
 
-func toInt(buf []byte) int {
-	n := int(0)
+func touint64(buf []byte) uint64 {
+	n := uint64(0)
 	for _, v := range buf {
-		n = n*10 + int(v-'0')
+		n = n*10 + uint64(v-'0')
 	}
 
 	return n
 }
 
-func readData() []int {
+func readData() []uint64 {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanWords)
 
 	scanner.Scan()
-	n := toInt(scanner.Bytes())
+	n := touint64(scanner.Bytes())
 
-	r := make([]int, n)
+	r := make([]uint64, n)
 	for i := range r {
 		scanner.Scan()
-		r[i] = toInt(scanner.Bytes())
+		r[i] = touint64(scanner.Bytes())
 	}
 
 	return r
 }
 
-func solve(heights []int) []int {
+func solve(heights []uint64) []uint64 {
 	L := len(heights)
+	res, t := make([]uint64, L), make([]uint64, L)
+	visited := make([]map[uint64]bool, L)
 
-	mins := make([]int, L)
-	mins[0] = heights[0]
-	for i := 1; i < L; i++ {
-		mins[i] = mins[i-1]
-		if /*(i >= L-1 || heights[i] < heights[i+1]) && */ i <= 0 || heights[i] < heights[i-1] {
-			mins[i] = heights[i]
+	var max uint64
+
+	for i, h := range heights {
+		if visited[i] == nil {
+			visited[i] = map[uint64]bool{}
+		}
+
+		if visited[i][h] {
+			continue
+		}
+		visited[i][h] = true
+
+		copy(t, heights)
+
+		s := h
+
+		for j := i - 1; j >= 0; j-- {
+			if t[j] > t[j+1] {
+				t[j] = t[j+1]
+			}
+			s += t[j]
+		}
+
+		for j := i + 1; j < L; j++ {
+			if t[j] > t[j-1] {
+				t[j] = t[j-1]
+			}
+			s += t[j]
+		}
+
+		if s > max {
+			max = s
+			copy(res, t)
 		}
 	}
 
-	fmt.Println(mins)
-
-	type state struct {
-		ind int
-		max int
-	}
-
-	type result struct {
-		sum int
-		ans []int
-	}
-
-	memo := map[state]result{}
-	_ = memo
-	start := state{-1, heights[0]}
-	_ = start
-
-	var calc func(i, max int) result
-	calc = func(i, max int) result {
-		if i < 0 {
-			return result{0, []int{}}
-		}
-
-		// r, f := memo[st]
-		// if f {
-		// 	return r
-		// }
-		r := result{}
-
-		return r
-	}
-
-	r := calc(L-1, heights[L-1])
-
-	return r.ans
+	return res
 }
 
 func main() {
@@ -85,7 +80,7 @@ func main() {
 	heights = solve(heights)
 
 	for _, h := range heights {
-		fmt.Printf("%v ", h)
+		fmt.Printf("%d ", h)
 	}
 	fmt.Println()
 }
