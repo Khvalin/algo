@@ -13,8 +13,6 @@ func treeBottom(tree string) []int {
 		node := stack[len(stack)-1]
 		i, level := node[0], node[1]
 
-		fmt.Print(tree[i])
-
 		switch {
 		case tree[i] == ' ':
 			{
@@ -50,6 +48,9 @@ func treeBottom(tree string) []int {
 		case tree[i] == ')':
 			{
 				stack = stack[:len(stack)-1]
+				if len(stack) > 0 {
+					stack[len(stack)-1][0] = i + 1
+				}
 			}
 		}
 	}
@@ -59,5 +60,11 @@ func treeBottom(tree string) []int {
 
 func main() {
 	r := treeBottom("(2 (7 (2 () ()) (6 (5 () ()) (11 () ()))) (5 () (9 (4 () ()) ())))")
+	fmt.Println(" [5 11 4] ", r)
+
+	r = treeBottom("(1 (2 (4 (8 () ()) (9 () ())) (5 (10 () ()) (11 () ()))) (3 (6 (12 () ()) (13 () ())) (7 (14 () ()) (15 () ()))))")
+	fmt.Println("[8, 9, 10, 11, 12, 13, 14, 15] ", r)
+
+	r = treeBottom("(1000 () ())")
 	fmt.Println(r)
 }
