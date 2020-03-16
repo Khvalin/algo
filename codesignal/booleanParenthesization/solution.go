@@ -60,8 +60,8 @@ func booleanParenthesization(expression string) int {
           res[1] += lcount[0] + rcount[0] + lcount[1] + rcount[1] - min
         break
         case '^':
-          res[0] += rcount[0] + lcount[0] + rcount[1] + lcount[1] 
-          res[1] += rcount[0] + lcount[0] + rcount[1] + lcount[1] 
+          res[0] += rcount[0] * lcount[0] + rcount[1] * lcount[1] 
+          res[1] += rcount[0] * lcount[1] + rcount[1] * lcount[0] 
         break
       }
       
@@ -75,6 +75,7 @@ func booleanParenthesization(expression string) int {
   }
   
   res := count(0, len(expression))
+
   return int(res[1] % mod)
 }
 
