@@ -4,15 +4,16 @@ import "fmt"
 
 func booleanParenthesization(expression string) int {
 	var mod uint = 1003
+	nmax := 1000
 
-	memo := map[int][2]uint{}
+	memo := make([][2]uint, nmax*nmax+nmax)
 
 	var count func(l, r int) [2]uint
 	count = func(l, r int) [2]uint {
 		key := l*1e3 + r
-		res, f := memo[key]
+		res := memo[key]
 
-		if f {
+		if res[0] > 0 || res[1] > 0 {
 			return res
 		}
 
