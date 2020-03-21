@@ -95,12 +95,10 @@ func amazonCheckmate(king, amazon string) []int {
 					check++
 				} else {
 					mate++
-					//fmt.Print(string('a'+r)+string('1'+c), " ")
 				}
 			} else {
 				if canMove {
 					safe++
-					//fmt.Print(string('a'+r)+string('1'+c), " ")
 				} else {
 					stale++
 				}
