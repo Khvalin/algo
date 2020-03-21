@@ -58,11 +58,10 @@ func amazonCheckmate(king, amazon string) []int {
 			}
 			setIllegal(ar, c)
 		}
-	}
 
-	for i := -1; i <= 1; i += 2 {
-		for j := -1; j <= 1; j += 2 {
-			for r, c := ar, ac; r >= 0 && c >= 0 && r < 8 && c < 8; r, c = i+r, j+c {
+		//diagonals
+		for i := -1; i <= 1; i += 2 {
+			for r, c := ar, ac; r >= 0 && c >= 0 && r < 8 && c < 8; r, c = i+r, k+c {
 				if c == kc && r == kr {
 					break
 				}
