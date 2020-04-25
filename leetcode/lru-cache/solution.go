@@ -30,15 +30,14 @@ func (this *LRUCache) bumpKey(key int) {
 			return
 		}
 
-		keyNode := &node{key: key, prev: this.tail}
-		this.keys[key] = keyNode
+		t := this.tail
+		this.tail.next = n
+		this.tail = n
 
-		this.tail.next = keyNode
-		this.tail = keyNode
-
-		fmt.Println(n.prev.key)
 		n.next.prev = n.prev
 		n.prev.next = n.next
+		n.next = nil
+		n.prev = t
 
 		return
 	}
@@ -90,13 +89,6 @@ func (this *LRUCache) String() string {
 }
 
 func main() {
-	/*
-
-	   ["LRUCache","put","put","get","get","put","get","get","get"]
-	   [[2],[2,1],[3,2],[3],[2],[4,3],[2],[3],[4]]
-
-	*/
-
 	cache := Constructor(3 /* capacity */)
 
 	for i := 1; i < 5; i++ {
