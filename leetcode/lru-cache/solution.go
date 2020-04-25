@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type node struct {
 	key  int
 	prev *node
@@ -16,32 +20,25 @@ type LRUCache struct {
 }
 
 func Constructor(capacity int) LRUCache {
-	return LRUCache{cache: map[int]int{}, keys: map[int]*node{}, capacity: capacity}
+	headNode := &node{key: -1}
+	return LRUCache{cache: map[int]int{}, keys: map[int]*node{}, capacity: capacity, head: headNode, tail: headNode}
 }
 
 func (this *LRUCache) bumpKey(key int) {
-
 	if n, f := this.keys[key]; f {
-		if n.prev != nil {
-			n.prev.next = n.next
+		if n == this.tail {
+			return
 		}
 
-		if n == this.head {
-			this.head = this.head.next
-			this.head.next.prev = nil
-		}
+		keyNode := &node{key: key, prev: this.tail}
+		this.keys[key] = keyNode
 
-		if n.next != nil {
-			n.next.prev = n.prev
-		}
+		this.tail.next = keyNode
+		this.tail = keyNode
 
-		if n == this.head {
-			this.head = this.head.next
-		}
-
-		n.prev = this.tail
-		this.tail.next = n
-		this.tail = n
+		fmt.Println(n.prev.key)
+		n.next.prev = n.prev
+		n.prev.next = n.next
 
 		return
 	}
@@ -49,26 +46,20 @@ func (this *LRUCache) bumpKey(key int) {
 	keyNode := &node{key: key}
 	this.keys[key] = keyNode
 
-	if this.tail == nil {
-		this.head = keyNode
-		this.tail = keyNode
-
-		return
-	}
-
 	this.size++
 	this.tail.next = keyNode
 	keyNode.prev = this.tail
 	this.tail = keyNode
 
-	if this.size == this.capacity {
-		v := this.head.key
+	if this.size > this.capacity {
+		v := this.head.next.key
 
 		delete(this.keys, v)
 		delete(this.cache, v)
 
-		this.head.next.prev = nil
-		this.head = this.head.next
+		this.head.next = this.head.next.next
+		this.head.next.prev = this.head
+
 		this.size--
 	}
 }
@@ -87,6 +78,17 @@ func (this *LRUCache) Put(key int, value int) {
 	this.cache[key] = value
 }
 
+func (this *LRUCache) String() string {
+	r := ""
+	n := this.head
+	for n != nil {
+		r += fmt.Sprintf(" %d", n.key)
+		n = n.next
+	}
+
+	return r
+}
+
 func main() {
 	/*
 
@@ -95,15 +97,15 @@ func main() {
 
 	*/
 
-	cache := Constructor(2 /* capacity */)
+	cache := Constructor(3 /* capacity */)
 
-	cache.Put(1, 1)
-	cache.Put(2, 2)
-	cache.Get(1)    // returns 1
-	cache.Put(3, 3) // evicts key 2
-	// cache.Get(2)    // returns -1 (not found)
-	// cache.Put(4, 4) // evicts key 1
-	// cache.Get(1)    // returns -1 (not found)
-	// cache.Get(3)    // returns 3
-	// cache.Get(4)    // returns 4
+	for i := 1; i < 5; i++ {
+		cache.Put(i, i)
+		fmt.Println(cache.String())
+	}
+
+	for i := 4; i > 0; i-- {
+		cache.Get(2)
+		fmt.Println(cache.String())
+	}
 }
