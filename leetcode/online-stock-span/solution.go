@@ -4,28 +4,36 @@ import "fmt"
 
 type StockSpanner struct {
 	stocks [][2]int32
+	index  int32
 }
 
 func Constructor() StockSpanner {
 	nmax := 10000
 	spanner := StockSpanner{
 		stocks: make([][2]int32, 1, nmax),
+		index:  0,
 	}
-	spanner.stocks[0] = [2]int32{100001, 0}
+	spanner.stocks[0] = [2]int32{99_999_999, 1}
 
 	return spanner
 }
 
 func (this *StockSpanner) Next(price int) int {
-	p := int32(price)
+	p, l := int32(price), int32(len(this.stocks))
 	var res int32 = 1
-	i := int32(len(this.stocks) - 1)
+	i := this.index
 	for i > 0 && this.stocks[i][0] <= p {
 		res += this.stocks[i][1]
-		i -= this.stocks[i][1]
+		i--
 	}
 
-	this.stocks = append(this.stocks, [2]int32{p, res})
+	i++
+	if i >= l {
+		this.stocks = append(this.stocks, [2]int32{p, res})
+	} else {
+		this.stocks[i] = [2]int32{p, res}
+	}
+	this.index = i
 
 	return int(res)
 }
