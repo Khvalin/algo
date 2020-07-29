@@ -7,67 +7,58 @@ func calculateMinimumHP(dungeon [][]int) int {
 		return 1
 	}
 
-	minHP := make([][]int, len(dungeon))
-	for i := range minHP {
-		minHP[i] = make([]int, len(dungeon[i]))
-		for j := range minHP[i] {
-			minHP[i][j] = 0
+	max := func(a, b int) int {
+		if a > b {
+			return a
+		}
+
+		return b
+	}
+
+	min := func(a, b int) int {
+		if a < b {
+			return a
+		}
+
+		return b
+	}
+
+	dp := make([][]int, len(dungeon))
+	for i := range dp {
+		dp[i] = make([]int, len(dungeon[i]))
+		for j := range dp[i] {
+			dp[i][j] = 0
 		}
 	}
 
-	res := 1
-	q := [][2]int{}
+	m := len(dungeon)
+	n := len(dungeon[0])
 
-	x, y := 0, 0
-	for x < len(dungeon) || y < len(dungeon[0]) {
-		if y < len(dungeon[0]) {
-			for i := x; i < len(dungeon); i++ {
-				q = append(q, [2]int{i, y})
-			}
-		}
+	//fill the queen bottomcorner
+	dp[m-1][n-1] = max(1-dungeon[m-1][n-1], 1)
 
-		if x < len(dungeon) {
-			for j := y + 1; j < len(dungeon[x]); j++ {
-				q = append(q, [2]int{x, j})
-			}
-		}
-		x++
-		y++
+	for i := m - 2; i >= 0; i-- {
+		dp[i][n-1] = max(dp[i+1][n-1]-dungeon[i][n-1], 1)
 	}
 
-	for len(q) > 0 {
-		v := q[0]
-		q = q[1:]
+	for i := n - 2; i >= 0; i-- {
+		dp[m-1][i] = max(dp[m-1][i+1]-dungeon[m-1][i], 1)
+	}
 
-		x, y, m, s := v[0], v[1], 1, 0
-		fmt.Println(x, y)
-		if x > 0 {
-			m = minHP[x-1][y]
-			s = dungeon[x-1][y]
-		}
-		if y > 0 && (minHP[x][y-1] > m) {
-			m = minHP[x][y-1]
-			s = dungeon[x][y-1]
-		}
-
-		s += dungeon[x][y]
-		if s < 0 && s < m {
-			m = s
-		}
-		minHP[x][y] = m
-		dungeon[x][y] = s
-
-		if x == len(dungeon)-1 && y == len(dungeon[x])-1 {
-			res = m
+	for i := m - 2; i >= 0; i-- {
+		for j := n - 2; j >= 0; j-- {
+			down := max(dp[i+1][j]-dungeon[i][j], 1)
+			right := max(dp[i][j+1]-dungeon[i][j], 1)
+			dp[i][j] = min(down, right)
 		}
 	}
 
-	fmt.Println(minHP)
-
-	return res
+	return dp[0][0]
 }
 
 func main() {
 	dungeon := [][]int{{-2, -3, 3}, {-5, -10, 1}, {10, 30, -5}}
+	//	dungeon = [][]int{{0, 0, 0}, {1, 1, -1}}
+	dungeon = [][]int{{1, -3, 3}, {0, -2, 0}, {-3, -3, -3}}
 	fmt.Println(calculateMinimumHP(dungeon))
 }
