@@ -3,7 +3,8 @@ package main
 import "fmt"
 
 type trie struct {
-	next   ['z' - 'a' + 1]*trie
+	char   byte
+	next   *trie
 	isWord bool
 }
 
@@ -30,7 +31,8 @@ func Constructor(words []string) StreamChecker {
 				tries[i] = t
 			} else {
 				ch := byte(w[j])
-				prev.next[ch-'a'] = t
+				prev.char = ch
+				prev.next = t
 			}
 
 			prev = t
@@ -50,21 +52,20 @@ func (this *StreamChecker) Query(letter byte) bool {
 
 	candidates := []*trie{}
 	for _, t := range this.tries {
-		if t.next[letter-'a'] != nil {
+		if t.char == letter && t.next != nil {
 			candidates = append(candidates, t)
 		}
 	}
 
 	for i := len(this.q) - 1; i >= 0; i-- {
-		ord := this.q[i] - 'a'
 		for j := 0; j < len(candidates); {
 			c := candidates[j]
-			if c != nil && c.next[ord] != nil {
-				if c.next[ord].isWord {
+			if c != nil && c.char == this.q[i] && c.next != nil {
+				if c.next.isWord {
 					return true
 				}
 
-				candidates[j] = c.next[ord]
+				candidates[j] = c.next
 				j++
 				continue
 			}
