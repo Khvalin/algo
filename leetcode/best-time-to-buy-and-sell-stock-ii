@@ -1,0 +1,50 @@
+package main
+
+func maxProfit(prices []int) int {
+	type state struct {
+		buy  bool
+		ind  int
+		last int
+		sum  int
+	}
+
+	max := make([][2]int, len(prices)+1)
+
+	q := []state{{true, 0, -1, 0}}
+	for len(q) > 0 {
+		l := len(q) - 1
+		st := q[l]
+
+		k := 0
+		if !st.buy {
+			k = 1
+		}
+		if st.sum < max[st.ind][k] {
+			q = q[:l]
+			continue
+		}
+
+		max[st.ind][k] = st.sum
+
+		if st.ind >= len(prices) {
+			q = q[:l]
+			continue
+		}
+
+		p := prices[st.ind]
+		q[l].ind++
+
+		if st.buy {
+			if (st.ind == 0) || (st.ind < len(prices)-1 && (prices[st.ind-1] >= p) && (prices[st.ind+1] > p)) {
+				q = append(q, state{false, st.ind + 1, p, st.sum})
+			}
+		} else {
+			if p > st.last {
+				q = append(q, state{true, st.ind + 1, 0, st.sum + p - st.last})
+			}
+		}
+	}
+
+	return max[len(prices)][0]
+}
+
