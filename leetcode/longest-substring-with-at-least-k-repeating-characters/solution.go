@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 func longestSubstring(s string, k int) int {
-	res := 0
 	count := make([][28]int, len(s)+2)
 
 	for i, ch := range s {
@@ -16,28 +15,41 @@ func longestSubstring(s string, k int) int {
 		count[i+1][ord]++
 	}
 
-	for i := 0; i <= len(s)-k; i++ {
-		c := count[i]
-		for j := i + k; j <= len(s); j++ {
+	var solve func(start, end int) int
+	solve = func(start, end int) int {
+		//	fmt.Println(start, end)
+		res := 0
+		i := start
+		for j := i; j < end; j++ {
+			ord := s[j] - 'a'
+			if count[end][ord]-count[i][ord] < k {
+				a, b := solve(i, j), solve(j+1, end)
+				if a > b {
+					return a
+				}
+
+				return b
+			}
 
 			f := true
-			for l, n := range count[j] {
-				f = f && (n-c[l] >= k || n == c[l])
+			c := count[i]
+			for l, n := range count[j+1] {
+				f = f && (n == c[l] || n-c[l] >= k)
 			}
 
-			if !f {
-				continue
-			}
-
-			if j-i > res {
-				res = j - i
+			if f && res < j-i+1 {
+				res = j - i + 1
 			}
 		}
+
+		return res
 	}
 
-	return res
+	return solve(0, len(s))
 }
 
 func main() {
+	fmt.Println(longestSubstring("aaabb", 3))
 	fmt.Println(longestSubstring("aaaaaaaaazcccccddddd", 5))
+	fmt.Println(longestSubstring("bbaaacbd", 3))
 }
