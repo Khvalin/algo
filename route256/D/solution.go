@@ -6,6 +6,14 @@ import (
 	"os"
 )
 
+const UintSize = 32 << (^uint(0) >> 32 & 1) // 32 or 64
+
+const (
+	MaxInt  = 1<<(UintSize-1) - 1 // 1<<31 - 1 or 1<<63 - 1
+	MinInt  = -MaxInt - 1         // -1 << 31 or -1 << 63
+	MaxUint = 1<<UintSize - 1     // 1<<32 - 1 or 1<<64 - 1
+)
+
 func toInt(buf []byte) int {
 	n := 0
 	d := 1
@@ -24,7 +32,7 @@ func main() {
 	n := 0
 	fmt.Scan(&n)
 
-	pr := map[int]map[int]int{}
+	pr := map[int][]int{}
 
 	output := bufio.NewWriter(os.Stdout)
 
@@ -45,10 +53,15 @@ func main() {
 			d := toInt(scanner.Bytes())
 
 			if pr[id] == nil {
-				pr[id] = map[int]int{}
+				pr[id] = make([]int, 2)
+				pr[id][0] = w
+				pr[id][1] = d
 			}
 
-			pr[id][w] = d
+			if pr[id][1] > d || pr[id][1] == d && pr[id][0] > w {
+				pr[id][0] = w
+				pr[id][1] = d
+			}
 		}
 	}
 
@@ -61,19 +74,10 @@ func main() {
 		scanner.Scan()
 		p := toInt(scanner.Bytes())
 
-		f := false
 		res := [2]int{-1, -1}
 		if units, found := pr[id]; found {
-			for k, v := range units {
-				if !f || v < res[1] || v == res[1] && k < res[0] {
-					res[0] = k
-					res[1] = v
-				}
-
-				f = true
-			}
-
-			res[1] += p
+			res[0] = units[0]
+			res[1] = units[1] + p
 		}
 
 		output.WriteString(fmt.Sprintln(res[0], res[1]))

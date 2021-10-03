@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "yAMPUU2flqtOC4gUU8MPCXImGQg6lzGUcub4fbHRLK1LJcgZb9yP5BgDzs8Ft467KORYMhYZW9F3coZhed6cfA==",
+  "success": true,
+  "projectFilePath": "/home/const/code/algo/codeforces/1579E1/1579E1.csproj",
+  "expectedPackageFiles": [
+    "/home/const/.nuget/packages/microsoft.aspnetcore.app.ref/5.0.0/microsoft.aspnetcore.app.ref.5.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
