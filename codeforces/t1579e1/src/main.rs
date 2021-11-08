@@ -1,8 +1,13 @@
 use std::collections::VecDeque;
+
 use std::io;
 use std::io::prelude::*;
 use std::io::BufWriter;
 use std::io::{stdout, Write};
+use std::sync::mpsc::channel;
+
+use std::sync::{Arc, Mutex};
+use std::thread;
 
 fn read_input() -> Vec<Vec<i32>> {
     let stdin = io::stdin();
@@ -50,15 +55,45 @@ fn main() {
     let mut buffer = BufWriter::new(stdout());
 
     let a = read_input();
-    for e in a {
-        let nums = solve(e);
+    let mut lines: Vec<String> = Vec::with_capacity(a.len());
 
-        let s = nums
-            .iter()
-            .map(|n| n.to_string())
-            .collect::<Vec<String>>()
-            .join(" ");
-        write!(buffer, "{}\n", s);
+    let (sender, receiver) = channel();
+
+    for i in 0..a.len() {
+        lines.push("".to_string());
+        let arr = a[i].clone();
+        let j = i;
+
+        let s = sender.clone();
+
+        let handler = thread::spawn(move || {
+            let nums = solve(arr);
+
+            let str = nums
+                .iter()
+                .map(|n| n.to_string())
+                .collect::<Vec<String>>()
+                .join(" ")
+                + "\n";
+
+            s.send((j, str)).unwrap();
+
+            drop(s);
+        });
+
+        handler.join().unwrap();
+    }
+    drop(sender);
+
+    let mut next = 0;
+    for (i, s) in receiver.iter() {
+        lines[i] = s;
+
+        while next < lines.len() && lines[next].len() > 0 {
+            buffer.write(lines[next].as_bytes()).unwrap();
+            lines[next] = "".to_string();
+            next = next + 1;
+        }
     }
 
     buffer.flush().unwrap();
