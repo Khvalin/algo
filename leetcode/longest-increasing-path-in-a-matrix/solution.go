@@ -2,27 +2,19 @@ package main
 
 import "fmt"
 
-type state struct {
-	x, y int
-	dist map[int]int
-}
-
 func longestIncreasingPath(matrix [][]int) int {
 	nmax := 201
-	st := &(map[int]int{})
+	dist := map[int]int{}
 
-	var solve func(s state) int
-	solve = func(s state) int {
+	var solve func(x, y int) int
+	solve = func(x, y int) int {
 		res := 1
-		x, y := s.x, s.y
 
 		key := nmax*x + y
 
-		if v, f := s.dist[key]; f {
+		if v, f := dist[key]; f {
 			return v
 		}
-
-		//s.dist[key] = 0
 
 		dirs := [][2]int{{x + 1, y}, {x - 1, y}, {x, y - 1}, {x, y + 1}}
 
@@ -36,27 +28,18 @@ func longestIncreasingPath(matrix [][]int) int {
 			key2 := dx*nmax + dy
 
 			d := 0
-			ps := &s.dist
-			if v, f := s.dist[key2]; f {
+			if v, f := dist[key2]; f {
 				d = v + 1
 			} else {
-				next := state{dx, dy, map[int]int{}}
-				for k, v := range s.dist {
-					next.dist[k] = v
-				}
-				ps = &next.dist
-
-				d = solve(next) + 1
+				d = solve(dx, dy) + 1
 			}
 
 			if d > res {
 				res = d
-				//s.dist[key2] = d
-				st = ps
 			}
 		}
 
-		s.dist[key] = res
+		dist[key] = res
 
 		return res
 	}
@@ -64,7 +47,7 @@ func longestIncreasingPath(matrix [][]int) int {
 	res := 0
 	for x, row := range matrix {
 		for y := range row {
-			r := solve(state{x, y, *st})
+			r := solve(x, y)
 			if r > res {
 				res = r
 			}
