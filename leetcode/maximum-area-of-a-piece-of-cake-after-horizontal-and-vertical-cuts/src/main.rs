@@ -13,10 +13,9 @@ impl Solution {
             array
         }
 
-        let mut hc: Vec<i32> = sort(horizontal_cuts);
-        let mut vc: Vec<i32> = sort(vertical_cuts);
-        hc.sort();
-        vc.sort();
+        let hc = sort(horizontal_cuts);
+        let vc = sort(vertical_cuts);
+
         let mut hmax = Ord::max(hc[0], h - hc[hc.len() - 1]);
         for i in 1..=hc.len() - 1 {
             hmax = Ord::max(hmax, hc[i] - hc[i - 1])
