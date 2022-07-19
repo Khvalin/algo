@@ -1,5 +1,3 @@
-use std::cmp;
-
 struct Solution {}
 
 impl Solution {
@@ -8,12 +6,12 @@ impl Solution {
         let mut b = 0;
 
         for mut n in cost {
-            n += cmp::min(a, b);
+            n += a.min(b);
             a = b;
             b = n;
         }
 
-        cmp::min(a, b)
+        a.min(b)
     }
 }
 
