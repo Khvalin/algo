@@ -5,7 +5,7 @@ impl Solution {
         let mut next: Vec<Vec<usize>> = vec![];
         let mut counter: Vec<usize> = words.to_owned().into_iter().map(|_| 0).collect();
 
-        for _ in 0..('z' as usize) + 1 {
+        for _ in 0..=('z' as usize) {
             let a: Vec<usize> = vec![];
             next.push(a);
         }
@@ -17,7 +17,7 @@ impl Solution {
         }
         let mut res = 0;
 
-        for ch in s.chars() {
+        s.chars().into_iter().for_each(|ch| {
             let a = next[ch as usize].to_owned();
             next[ch as usize].clear();
 
@@ -32,7 +32,7 @@ impl Solution {
 
                 next[c as usize].push(i);
             }
-        }
+        });
 
         res
     }
