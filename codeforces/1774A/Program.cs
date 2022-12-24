@@ -1,12 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-int t = int.Parse(Console.ReadLine());
+using System.Text;
 
-using var writer = new StreamWriter(Console.OpenStandardOutput());
+int t = int.Parse(Console.ReadLine() ?? "0");
+
+using var writer = new StreamWriter(Console.OpenStandardOutput(), Encoding.ASCII, 64);
+
 for (var i = 0; i < t; i++)
 {
     Console.ReadLine();
-    var s = Console.ReadLine();
+    var s = Console.ReadLine() ?? String.Empty;
     var res = new char[s.Length - 1];
 
     int j = -1;
