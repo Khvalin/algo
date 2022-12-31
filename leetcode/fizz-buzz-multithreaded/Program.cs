@@ -27,6 +27,7 @@ public class FizzBuzz
     private int c = 0;
     private int ind = 0;
     private List<AutoResetEvent> _pauseEvents = new List<AutoResetEvent>();
+    private Object l = new Object();
 
 
     public FizzBuzz(int n)
@@ -34,6 +35,8 @@ public class FizzBuzz
         this.n = n;
 
         this._pauseEvents.Add(new AutoResetEvent(true));
+        this._pauseEvents.Add(new AutoResetEvent(false));
+        this._pauseEvents.Add(new AutoResetEvent(false));
         this._pauseEvents.Add(new AutoResetEvent(false));
     }
 
@@ -44,11 +47,16 @@ public class FizzBuzz
 
     private void Recalc()
     {
-        this._pauseEvents[0].Reset();
-        this._pauseEvents[1].Reset();
+        lock (this.l)
+        {
+            this._pauseEvents[0].Reset();
+            this._pauseEvents[1].Reset();
+            this._pauseEvents[2].Reset();
+            this._pauseEvents[3].Reset();
 
-        Interlocked.Increment(ref this.ind);
-        this._pauseEvents[(this.ind) % 2].Set();
+            this.ind++;
+            this._pauseEvents[(this.ind) % 4].Set();
+        }
     }
 
     // printFizz() outputs "fizz".
@@ -64,9 +72,10 @@ public class FizzBuzz
             if (this.c % 3 == 0 && this.c % 5 != 0)
             {
                 printFizz.Invoke();
-                this.Recalc();
-                this._pauseEvents[1].WaitOne();
             }
+
+            this.Recalc();
+            this._pauseEvents[1].WaitOne();
         }
 
         this.Recalc();
@@ -85,9 +94,10 @@ public class FizzBuzz
             if (this.c % 3 != 0 && this.c % 5 == 0)
             {
                 printBuzz.Invoke();
-                this.Recalc();
-                this._pauseEvents[1].WaitOne();
             }
+
+            this.Recalc();
+            this._pauseEvents[2].WaitOne();
         }
 
         this.Recalc();
@@ -106,9 +116,10 @@ public class FizzBuzz
             if (this.c > 0 && this.c % 3 == 0 && this.c % 5 == 0)
             {
                 printFizzBuzz.Invoke();
-                this.Recalc();
-                this._pauseEvents[1].WaitOne();
             }
+
+            this.Recalc();
+            this._pauseEvents[3].WaitOne();
         }
 
         this.Recalc();
@@ -120,6 +131,7 @@ public class FizzBuzz
         while (this.c <= this.n)
         {
             this.Inc();
+
             if (this.c > this.n)
             {
                 break;
