@@ -2,10 +2,10 @@ struct Solution;
 
 impl Solution {
     pub fn final_string(s: String) -> String {
-        let mut prefix = vec![];
-        let mut postfix = vec![];
-
+        let mut res = s.chars().map(|_| '\0').collect::<Vec<char>();
         let mut c = 0;
+        let l = 0;
+        let r = s.len() - 1;
 
         for ch in s.chars().rev() {
             if ch == 'i' {
@@ -14,15 +14,14 @@ impl Solution {
             }
 
             if c % 2 == 1 {
-                prefix.push(ch);
+                res[l] = ch;
+                l += 1;
             } else {
-                postfix.push(ch)
+                res[r] = ch;
+                r -= 1;
             }
         }
 
-        postfix.reverse();
-
-        let res = format!("{}{}", prefix.into_iter().collect::<String>(), postfix.into_iter().collect::<String>());
         res
     }
 }
