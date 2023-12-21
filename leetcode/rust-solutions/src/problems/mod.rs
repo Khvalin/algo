@@ -3,3 +3,4 @@ mod special_positions_in_a_binary_matrix;
 mod maximum_product_difference_between_two_pairs;
 mod image_smoother;
 mod buy_two_chocolates;
+mod widest_vertical_area_between_two_points_containing_no_points;
