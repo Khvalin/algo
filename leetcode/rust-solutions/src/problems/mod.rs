@@ -8,3 +8,4 @@ mod largest_odd_number_in_string;
 mod maximum_score_after_splitting_a_string;
 mod path_crossing;
 mod check_if_two_string_arrays_are_equivalent;
+mod valid_anagram;
