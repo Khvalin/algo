@@ -5,30 +5,29 @@ impl Solution {
         let mut i = 0;
         let mut j = 0;
 
-        let mut char_iter1 = "".chars();
-        let mut char_iter2 = "".chars();
+        let mut char_iter = ("".chars(), "".chars());
 
         let mut ch: (Option<char>, Option<char>) = (None, None);
 
         while i <= word1.len() && j <= word2.len() {
             if ch.0.is_none() {
-                ch.0 = char_iter1.next();
-            }
-
-            if ch.1.is_none() {
-                ch.1 = char_iter2.next();
+                ch.0 = char_iter.0.next();
             }
 
             if ch.0.is_none() {
                 if i < word1.len() {
-                    char_iter1 = word1[i].chars();
+                    char_iter.0 = word1[i].chars();
                 }
                 i += 1;
             }
 
             if ch.1.is_none() {
+                ch.1 = char_iter.1.next();
+            }
+
+            if ch.1.is_none() {
                 if j < word2.len() {
-                    char_iter2 = word2[j].chars();
+                    char_iter.1 = word2[j].chars();
                 }
                 j += 1;
             }
