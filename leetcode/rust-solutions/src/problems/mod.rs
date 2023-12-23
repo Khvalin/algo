@@ -7,3 +7,4 @@ mod widest_vertical_area_between_two_points_containing_no_points;
 mod largest_odd_number_in_string;
 mod maximum_score_after_splitting_a_string;
 mod path_crossing;
+mod check_if_two_string_arrays_are_equivalent;
