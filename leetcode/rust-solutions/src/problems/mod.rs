@@ -3,9 +3,11 @@ mod special_positions_in_a_binary_matrix;
 mod maximum_product_difference_between_two_pairs;
 mod image_smoother;
 mod buy_two_chocolates;
-mod widest_vertical_area_between_two_points_containing_no_points;
 mod largest_odd_number_in_string;
 mod maximum_score_after_splitting_a_string;
 mod path_crossing;
 mod check_if_two_string_arrays_are_equivalent;
+mod string_compression_ii;
 mod valid_anagram;
+mod widest_vertical_area_between_two_points_containing_no_points;
+

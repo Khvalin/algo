@@ -18,6 +18,6 @@ impl Solution {
             counts[tch as usize - a_code] -= 1;
         }
 
-        counts.into_iter().all(|c| *c == 0)
+        counts.into_iter().all(|c| c == 0)
     }
 }
