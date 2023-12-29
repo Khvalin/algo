@@ -11,17 +11,17 @@ impl Solution {
         visited.insert((0, 0));
 
         for ch in path.chars() {
-             match ch {
+            match ch {
                 'N' => y += 1,
                 'S' => y -= 1,
                 'E' => x += 1,
                 'W' => x -= 1,
                 _ => unreachable!(),
-             }
+            }
 
-             if !visited.insert((x, y)) {
-                 return true;
-             }
+            if !visited.insert((x, y)) {
+                return true;
+            }
         }
 
         false

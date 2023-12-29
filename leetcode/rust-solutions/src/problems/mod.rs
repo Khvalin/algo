@@ -1,13 +1,13 @@
-mod element_appearing_more_than_25_in_sorted_array;
-mod special_positions_in_a_binary_matrix;
-mod maximum_product_difference_between_two_pairs;
-mod image_smoother;
 mod buy_two_chocolates;
-mod largest_odd_number_in_string;
-mod maximum_score_after_splitting_a_string;
-mod path_crossing;
 mod check_if_two_string_arrays_are_equivalent;
+mod element_appearing_more_than_25_in_sorted_array;
+mod image_smoother;
+mod largest_odd_number_in_string;
+mod maximum_product_difference_between_two_pairs;
+mod maximum_score_after_splitting_a_string;
+mod minimum_difficulty_of_a_job_schedule;
+mod path_crossing;
+mod special_positions_in_a_binary_matrix;
 mod string_compression_ii;
 mod valid_anagram;
 mod widest_vertical_area_between_two_points_containing_no_points;
-
