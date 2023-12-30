@@ -11,3 +11,4 @@ mod special_positions_in_a_binary_matrix;
 mod string_compression_ii;
 mod valid_anagram;
 mod widest_vertical_area_between_two_points_containing_no_points;
+mod redistribute_characters_to_make_all_strings_equal;
