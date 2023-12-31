@@ -3,6 +3,7 @@ mod check_if_two_string_arrays_are_equivalent;
 mod element_appearing_more_than_25_in_sorted_array;
 mod image_smoother;
 mod largest_odd_number_in_string;
+mod largest_substring_between_two_equal_characters;
 mod maximum_product_difference_between_two_pairs;
 mod maximum_score_after_splitting_a_string;
 mod minimum_difficulty_of_a_job_schedule;
