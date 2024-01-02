@@ -1,6 +1,7 @@
 mod assign_cookies;
 mod buy_two_chocolates;
 mod check_if_two_string_arrays_are_equivalent;
+mod convert_an_array_into_a_2d_array_with_conditions;
 mod element_appearing_more_than_25_in_sorted_array;
 mod image_smoother;
 mod largest_odd_number_in_string;
