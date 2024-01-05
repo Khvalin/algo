@@ -11,6 +11,7 @@ mod maximum_score_after_splitting_a_string;
 mod minimum_difficulty_of_a_job_schedule;
 mod minimum_number_of_operations_to_make_array_empty;
 //mod number_of_laser_beams_in_a_bank;
+mod longest_increasing_subsequence;
 mod path_crossing;
 mod redistribute_characters_to_make_all_strings_equal;
 mod special_positions_in_a_binary_matrix;
