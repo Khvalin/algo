@@ -15,6 +15,7 @@ mod leaf_similar_trees;
 mod longest_increasing_subsequence;
 mod maximum_profit_in_job_scheduling;
 mod path_crossing;
+mod range_sum_of_bst;
 mod redistribute_characters_to_make_all_strings_equal;
 mod special_positions_in_a_binary_matrix;
 mod string_compression_ii;
