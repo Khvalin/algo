@@ -3,29 +3,36 @@ use std::collections::HashMap;
 struct Solution;
 
 impl Solution {
-    /// https://leetcode.com/problems/find-players-with-zero-or-one-losses/
     pub fn find_winners(matches: Vec<Vec<i32>>) -> Vec<Vec<i32>> {
-        let mut losses: HashMap<i32, i32> = HashMap::new();
+        let mut loses:HashMap<i32, i32> = HashMap::new();
+
+        let mut min = 100_001;
+        let mut max = 0;
 
         for m in matches {
-            losses.insert(m[0], *losses.get(&m[0]).unwrap_or(&0));
-            losses.insert(m[1], 1 + *losses.get(&m[1]).unwrap_or(&0));
+            loses.insert(m[0], *loses.get(&m[0]).unwrap_or(&0));
+            loses.insert(m[1], 1 + *loses.get(&m[1]).unwrap_or(&0));
+
+            min = min.min(m[0]).min(m[1]);
+            max = max.max(m[0]).max(m[1]);
         }
 
         let mut res = vec![vec![], vec![]];
 
-        for (k, v) in losses {
-            if v < 2 {
-                res[v as usize].push(k);
+        for (k, v) in loses.keys().zip(loses.values()) {
+            if *v < 2 {
+                res[*v as usize].push(*k);
             }
         }
 
         res[0].sort_unstable();
         res[1].sort_unstable();
 
+
         res
     }
 }
+
 
 #[cfg(test)]
 mod tests {
