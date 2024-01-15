@@ -15,6 +15,7 @@ mod leaf_similar_trees;
 mod longest_increasing_subsequence;
 //mod maximum_profit_in_job_scheduling;
 mod determine_if_string_halves_are_alike;
+mod find_players_with_zero_or_one_losses;
 mod minimum_number_of_steps_to_make_two_strings_anagram;
 mod path_crossing;
 mod range_sum_of_bst;
