@@ -6,6 +6,7 @@ from typing import List
 class Solution:
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
         sums = [[], []]
+        candidates.sort()
         for _ in range(target + 1):
             sums[0].append(set())
             sums[1].append(set())
@@ -28,18 +29,10 @@ class Solution:
                     sums[cur][k].add(a)
                     if k < n:
                         continue
-                    copy = list(a)
-                    copy.append(n)
-                    copy.sort()
 
-                    sums[cur][k - n].add(tuple(copy))
+                    sums[cur][k - n].add(a + (n,))
 
-        result = set()
-        for arr in sums[cur][0]:
-            a = sorted(arr)
-            result.add(tuple(a))
-
-        return list(result)
+        return list(sums[cur][0])
 
 
 t1 = Solution().combinationSum2([10, 1, 2, 7, 6, 1, 5], target=8)
