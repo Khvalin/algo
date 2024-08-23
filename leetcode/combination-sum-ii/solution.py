@@ -12,21 +12,18 @@ class Solution:
             sums[1].append(set())
 
         cur = 0
-        l = 0
-        for i in range(0, len(candidates)):
+        for i in range(len(candidates)):
             n = candidates[i]
             if n > target:
-                continue
+                break
 
-            cur = l % 2
-            prev = (l + 1) % 2
-            l += 1
-            # for a in sums[cur]:
-            # a.clear()
+            cur = i % 2
+            prev = (i + 1) % 2
+
             sums[cur][target - n].add((n,))
             for k, arr in enumerate(sums[prev]):
+                sums[cur][k] = sums[cur][k] | sums[prev][k]
                 for a in arr:
-                    sums[cur][k].add(a)
                     if k < n:
                         continue
 
